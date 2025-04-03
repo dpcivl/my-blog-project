@@ -1,0 +1,9 @@
+POST http://localhost:3000/posts
+Content-Type: application/json
+
+{
+  "title": "Blender Practice Day 1",
+  "content": "Modeled a coffee cup in 30 minutes",
+  "category": "Blender",
+  "image": "screenshot1.png"
+}

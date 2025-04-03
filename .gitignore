@@ -1,0 +1,6 @@
+# To my blog project
+server/node_modules/
+server/.env
+
+client/dist/
+client/node_modules/
