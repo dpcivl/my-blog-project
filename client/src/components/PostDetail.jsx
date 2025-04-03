@@ -10,14 +10,14 @@ function PostDetail() {
 
   useEffect(() => {
     // ✅ Load a single post by ID
-    axios.get(`http://localhost:3000/posts/${id}`)
+    axios.get(`https://my-blog-project-2485.onrender.com/posts/${id}`)
       .then(res => setPost(res.data))
       .catch(() => setError(true));
   }, [id]);
 
   function handleDelete() {
     if (confirm("Are you sure you want to delete this post?")) {
-      axios.delete(`http://localhost:3000/posts/${id}`)
+      axios.delete(`https://my-blog-project-2485.onrender.com/posts/${id}`)
         .then(() => {
           alert("Post deleted.");
           navigate('/');
@@ -36,7 +36,7 @@ function PostDetail() {
       <p>{post.content}</p>
       {post.image && (
         <img
-          src={`http://localhost:3000/uploads/${post.image}`}
+          src={`https://my-blog-project-2485.onrender.com/uploads/${post.image}`}
           alt=""
           style={{
             width: '100%',

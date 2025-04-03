@@ -23,7 +23,7 @@ function PostList({ posts }) {
             </div>
             {post.image && (
               <img
-                src={`http://localhost:3000/uploads/${post.image}`}
+                src={`https://my-blog-project-2485.onrender.com/uploads/${post.image}`}
                 alt=""
                 style={{
                   width: "80px",

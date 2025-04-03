@@ -14,7 +14,7 @@ function PostForm({ onPostCreated, mode = 'create' }) {
 
     useEffect(() => {
         if (mode === 'edit' && id) {
-          axios.get(`http://localhost:3000/posts/${id}`)
+          axios.get(`https://my-blog-project-2485.onrender.com/posts/${id}`)
             .then(res => {
               const post = res.data;
               setTitle(post.title);
@@ -40,8 +40,8 @@ function PostForm({ onPostCreated, mode = 'create' }) {
         if (image) formData.append('image', image);
 
         const url = mode === 'edit'
-            ? `http://localhost:3000/posts/${id}`
-            : 'http://localhost:3000/posts';
+            ? `https://my-blog-project-2485.onrender.com/posts/${id}`
+            : 'https://my-blog-project-2485.onrender.com/posts';
 
         const method = mode === 'edit' ? 'put' : 'post';
 
@@ -76,7 +76,7 @@ function PostForm({ onPostCreated, mode = 'create' }) {
             </select>
 
             {existingImage && (
-                <p>Current image: <img src={`http://localhost:3000/uploads/${existingImage}`} style={{ width: '100px' }} /></p>
+                <p>Current image: <img src={`https://my-blog-project-2485.onrender.com/uploads/${existingImage}`} style={{ width: '100px' }} /></p>
             )}
 
             <input type="file" onChange={e => setImage(e.target.files[0])} style={{ display: 'block', marginBottom: '12px'}} />

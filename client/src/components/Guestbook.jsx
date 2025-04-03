@@ -7,7 +7,7 @@ function Guestbook() {
     const [msg, setMsg] = useState('');
 
     function fetchMessages() {
-        axios.get('http://localhost:3000/guestbook')
+        axios.get('https://my-blog-project-2485.onrender.com/guestbook')
             .then(res => setMessages(res.data));
     }
 
@@ -16,7 +16,7 @@ function Guestbook() {
     }, []);
 
     function handlePost() {
-        axios.post('http://localhost:3000/guestbook', {
+        axios.post('https://my-blog-project-2485.onrender.com/guestbook', {
             name,
             message: msg
         }).then(() => {
@@ -28,7 +28,7 @@ function Guestbook() {
 
     function handleDelete(id) {
         if (confirm("Delete this message?")) {
-            axios.delete(`http://localhost:3000/guestbook/${id}`)
+            axios.delete(`https://my-blog-project-2485.onrender.com/guestbook/${id}`)
                 .then(() => fetchMessages());
         }
     }

@@ -13,7 +13,7 @@ function App() {
   const [category, setCategory] = useState('All');
 
   useEffect(() => {
-    axios.get('http://localhost:3000/posts')
+    axios.get('https://my-blog-project-2485.onrender.com/posts')
       .then(res => setPosts(res.data));
   }, []);
 
