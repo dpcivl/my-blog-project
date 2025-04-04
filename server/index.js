@@ -17,7 +17,22 @@ const upload = multer({
 });
 const app = express();
 const bcrypt = require('bcrypt');
+const admin = require("firebase-admin");
+const serviceAccount = require("./firebase-key.json");
+const fs = require('fs');
+const { v4: uuidv4 } = require('uuid'); // For unique filenames
 const PORT = 3000;
+
+const serviceAccountBase64 = process.env.FIREBASE_CREDENTIALS_BASE64;
+const serviceAccount = JSON.parse(
+  Buffer.from(serviceAccountBase64, "base64").toString("utf8")
+);
+
+admin.initializeApp({
+  credential: admin.credential.cert(serviceAccount),
+  storageBucket: "hyoinparkblog.appspot.com"
+});
+const bucket = admin.storage().bucket();
 
 app.use(cors());
 app.use(bodyParser.json());
@@ -38,15 +53,36 @@ app.get('/posts', async (req, res) => {
   });
   
 app.post('/posts', upload.single('image'), async (req, res) => {
-    const newPost = new Post({
-        title: req.body.title,
-        content: req.body.content,
-        category: req.body.category,
-        image: req.file ? req.file.filename : null
+  let imageUrl = null;
+
+  if (req.file) {
+    const filename = `${uuidv4()}-${req.file.originalname}`;
+    const upload = await bucket.upload(req.file.path, {
+      destination: filename,
+      metadata: {
+        metadata: {
+          firebaseStorageDownloadTokens: uuidv4()
+        }
+      }
     });
 
-    await newPost.save();
-    res.json({ message: "Post created!", post: newPost });
+    const file = upload[0];
+    const token = file.metadata.metadata.firebaseStorageDownloadTokens;
+    imageUrl = `https://firebasestorage.googleapis.com/v0/b/${bucket.name}/o/${encodeURIComponent(filename)}?alt=media&token=${token}`;
+
+    // remove local copy
+    fs.unlinkSync(req.file.path);
+  }
+
+  const newPost = new Post({
+    title: req.body.title,
+    content: req.body.content,
+    category: req.body.category,
+    image: imageUrl
+  });
+
+  await newPost.save();
+  res.json({ message: "Post created!", post: newPost });
 });
 
 app.get('/posts/:id', async (req, res) => {
