@@ -13,25 +13,19 @@ function PostList({ posts }) {
           borderRadius: "8px"
         }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-            <div>
-              <h3 style={{ margin: 0 }}>
+            <div className="post-text-content">
+              <h3 className="main-post-title">
                 <Link to={`/post/${post._id}`}>{post.title}</Link>
               </h3>
-              <p style={{ margin: 0, fontSize: "14px", color: "#666" }}>
-                {new Date(post.date).toLocaleString()}
+              <p className="post-date">
+                📅 {new Date(post.date).toLocaleDateString()}
               </p>
             </div>
             {post.image && (
               <img
-                src={`https://my-blog-project-2485.onrender.com/uploads/${post.image}`}
-                alt=""
-                style={{
-                  width: "80px",
-                  height: "80px",
-                  objectFit: "cover",
-                  borderRadius: "6px",
-                  marginLeft: "12px"
-                }}
+              src={`https://my-blog-project-2485.onrender.com/uploads/${post.image}`}
+              alt=""
+              className="post-thumbnail"
               />
             )}
           </div>
