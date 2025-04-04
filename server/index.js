@@ -32,9 +32,6 @@ fs.ensureFileSync(GUESTBOOK_FILE);
 fs.writeJsonSync(GUESTBOOK_FILE, [], { spaces: 2 });
 
 app.post('/admin/login', (req, res) => {
-    console.log("Received password:", req.body.password);
-    console.log("Expected password:", process.env.ADMIN_PASSWORD);
-  
     if (req.body.password === process.env.ADMIN_PASSWORD) {
       return res.json({ success: true });
     } else {
