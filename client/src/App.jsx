@@ -55,7 +55,7 @@ function App() {
   return (
     <div className="app-wrapper">
       <h1 style={{
-        fontFamily: "'Press Start 2P', cursive",
+        fontFamily: "'Press Start 2P'",
         fontSize: '2rem',
         color: '#fff',
         marginBottom: '16px',
