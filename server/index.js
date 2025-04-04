@@ -117,7 +117,13 @@ app.post('/guestbook/hide/:id', async (req, res) => {
     res.json({ message: "Message hidden" });
   });
 
-app.get('/guestbook/all', async (req, res) => {
-    const messages = await fs.readJson(GUESTBOOK_FILE);
-    res.json(messages); // includes hidden ones
+  app.get('/guestbook/all', async (req, res) => {
+    const messages = await GuestbookMessage.find().sort({ date: -1 });
+    console.log("Fetched all messages:", messages);
+    res.json(messages);
+  });
+
+app.post('/guestbook/unhide/:id', async (req, res) => {
+    await GuestbookMessage.findByIdAndUpdate(req.params.id, { hidden: false });
+    res.json({ message: "Message unhidden" });
   });
