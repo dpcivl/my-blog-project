@@ -29,23 +29,42 @@ function App() {
     : posts.filter(p => p.category === category);
 
   return (
-    <div className="container">
-      <h1>Hyoin Park</h1>
+    <div className="Quicksand">
+      <h1 style={{
+        fontFamily: "'Press Start 2P', cursive",
+        fontSize: '2rem',
+        color: '#fff',
+        marginBottom: '16px',
+        textShadow: `
+          2px 1px 0 #2e8b57,
+          -1px -2px 0 #2e8b57,
+          1px -1px 0 #2e8b57,
+          -1px 1px 0 #2e8b57
+        `
+      }}>
+        Hyoin Park
+      </h1>
 
       <div style={{ marginBottom: '20px' }}>
-        <Link to="/" style={{ marginRight: '10px' }}>🏠 Home</Link>
-        <Link to="/guestbook">💬 Guestbook</Link>
-      </div>
+        <Link to="/" className="nav-button">🏠 Home</Link>
+        <Link to="/guestbook" className="nav-button">💬 Guestbook</Link>
 
-      {!isAdmin && <Link to="/admin" style={{ marginLeft: '10px' }}>🔐 Admin Login</Link>}
-      {isAdmin && (
-        <button onClick={() => {
-          localStorage.removeItem("isAdmin");
-          setIsAdmin(false);
-        }} style={{ marginLeft: '12px' }}>
-          🔓 Logout
-        </button>
-      )}
+        {!isAdmin && (
+          <Link to="/admin" className="nav-button">🔐 Admin Login</Link>
+        )}
+
+        {isAdmin && (
+          <button
+            className="nav-button logout-button"
+            onClick={() => {
+              localStorage.removeItem("isAdmin");
+              setIsAdmin(false);
+            }}
+          >
+            🔓 Logout
+          </button>
+        )}
+      </div>
 
       <Routes>
         <Route path="/" element={

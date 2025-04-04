@@ -30,10 +30,14 @@ function PostDetail({ isAdmin} ) {
 
   return (
     <div>
-      <h2>{post.title}</h2>
-      <p><strong>Date:</strong> {new Date(post.date).toLocaleString()}</p>
-      <p><strong>Category:</strong> {post.category}</p>
-      <p>{post.content}</p>
+      <div className="post-info-bar">
+        <div className="post-title">{post.title}</div>
+        <div className="post-meta-group">
+          <span className="post-meta">📅 {new Date(post.date).toLocaleDateString()}</span>
+          <span className="post-meta">🗂️ {post.category}</span>
+        </div>
+      </div>
+      <p className="post-content">{post.content}</p>
       {post.image && (
         <img
           src={`https://my-blog-project-2485.onrender.com/uploads/${post.image}`}
@@ -50,8 +54,8 @@ function PostDetail({ isAdmin} ) {
       <div style={{ marginTop: "20px" }}>
           {isAdmin && (
             <>
-              <button onClick={handleDelete}>🗑️</button>
-              <button onClick={() => navigate(`/edit/${post._id}`)}>✏️</button>
+              <button className="danger" onClick={handleDelete}>🗑️ Delete</button>
+              <button onClick={() => navigate(`/edit/${post._id}`)}>✏️ Edit</button>
             </>
           )}
       </div>
