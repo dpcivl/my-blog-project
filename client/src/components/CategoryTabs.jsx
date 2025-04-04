@@ -6,10 +6,7 @@ function CategoryTabs({ current, onChange }) {
             {categories.map(cat => (
                 <button
                     key={cat}
-                    style={{
-                        marginRight: "8px",
-                        fontWeight: current === cat ? 'bold' : 'normal'
-                    }}
+                    className={`category-button ${current === cat ? 'active' : ''}`}
                     onClick={() => onChange(cat)}
                 >
                     {cat}
