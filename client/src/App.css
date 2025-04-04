@@ -217,3 +217,43 @@ img{
   flex-direction: column;  /* ✅ stack vertically */
   align-items: flex-start; /* ✅ left-align content */
 }
+
+.streak-bar {
+  display: flex;
+  gap: 16px;
+  flex-wrap: wrap;
+  justify-content: center;  /* ✅ Center horizontally */
+  margin: 24px 0;
+}
+
+.streak {
+  font-family: 'VT323', monospace;
+  font-size: 1.2rem;
+  background-color: #ffffff;
+  padding: 8px 12px;
+  border-radius: 8px;
+  box-shadow: 2px 2px 0 #ccc;
+}
+
+.streak-container {
+  position: sticky;
+  bottom: 0;
+  z-index: 10;
+  border-top: 1px solid #ddd;
+  padding: 12px 16px;
+  text-align: center;
+}
+
+.streak-title {
+  font-family: 'VT323', cursive;
+  font-size: 1rem;
+  margin-bottom: 12px;
+  color: #2e8b57;
+  text-shadow: 1px 1px #fff;
+}
+
+.app-wrapper {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh; /* full screen height */
+}
