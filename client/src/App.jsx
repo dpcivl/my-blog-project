@@ -96,13 +96,15 @@ function App() {
       <Routes>
         <Route path="/" element={
           <>
-            <CategoryTabs current={category} onChange={setCategory} />
-            <PostList posts={filtered} key={category + posts.length} />
-            {isAdmin && (
-              <div style={{ marginBottom: '16px' }}>
-                <Link to="/new" className="nav-button">➕ Create New Post</Link>
-              </div>
-            )}
+            <div className="main-content">
+              <CategoryTabs current={category} onChange={setCategory} />
+              <PostList posts={filtered} key={category + posts.length} />
+              {isAdmin && (
+                <div style={{ marginBottom: '16px' }}>
+                  <Link to="/new" className="nav-button">➕ Create New Post</Link>
+                </div>
+              )}
+            </div>
 
             {/* ✅ Moved streaks to bottom */}
             <section className="streak-container">
