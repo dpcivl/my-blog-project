@@ -22,17 +22,21 @@ function Guestbook({ isAdmin }) {
 
     function handlePost() {
         axios.post('https://my-blog-project-2485.onrender.com/guestbook', {
-            name,
-            message: msg,
-            password
-          })
-          .then(() => {
-            setName('');
-            setMsg('');
-            setPassword('');
-            fetchMessages();
-          });
-    }
+          name,
+          message: msg,
+          password
+        })
+        .then(() => {
+          setName('');
+          setMsg('');
+          setPassword('');
+          fetchMessages();
+        })
+        .catch(err => {
+          alert("Failed to post message. Please enter all fields.");
+          console.error(err);
+        });
+      }
 
     function handleDelete(id) {
         const pw = prompt("Enter your password to delete this post:");
@@ -59,20 +63,27 @@ function Guestbook({ isAdmin }) {
             <h2>Guestbook</h2>
 
             <div style={{ marginBottom: '16px' }}>
-                <input
-                    value={name}
-                    onChange={e => setName(e.target.value)}
-                    placeholder="Your name"
-                    style={{ display: 'block', marginBottom: '8px'}}
-                />
-                <textarea
-                    value={msg}
-                    onChange={e => setMsg(e.target.value)}
-                    placeholder="Leave a message..."
-                    rows={4}
-                    style={{ width: '100%' }}
-                />
-                <button onClick={handlePost}>Post</button>
+            <input
+                value={name}
+                onChange={e => setName(e.target.value)}
+                placeholder="Your name"
+                style={{ display: 'block', marginBottom: '8px' }}
+            />
+            <input
+                type="password"
+                value={password}
+                onChange={e => setPassword(e.target.value)}
+                placeholder="Password to delete later"
+                style={{ display: 'block', marginBottom: '8px' }}
+            />
+            <textarea
+                value={msg}
+                onChange={e => setMsg(e.target.value)}
+                placeholder="Leave a message..."
+                rows={4}
+                style={{ width: '100%', marginBottom: '8px' }}
+            />
+            <button onClick={handlePost}>Post</button>
             </div>
             
             <hr />
