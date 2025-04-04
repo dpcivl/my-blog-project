@@ -34,10 +34,7 @@ admin.initializeApp({
 });
 const bucket = admin.storage().bucket();
 
-app.use(cors({
-  origin: ['http://localhost:5173', 'https://dpcivl.vercel.app/'], // adjust for your dev + prod frontend
-  credentials: true
-}));
+app.use(cors());
 app.use(bodyParser.json());
 app.use(express.json());
 
