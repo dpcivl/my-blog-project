@@ -2,6 +2,8 @@
 server/node_modules/
 server/.env
 server/.env.dev
+server/firebase-key.json
+server/firebase-key.txt
 
 client/dist/
 client/node_modules/
