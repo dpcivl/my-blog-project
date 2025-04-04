@@ -97,7 +97,7 @@ function App() {
         <Route path="/" element={
           <>
             <CategoryTabs current={category} onChange={setCategory} />
-            <PostList posts={filtered} />
+            <PostList posts={filtered} key={category + posts.length} />
             {isAdmin && (
               <div style={{ marginBottom: '16px' }}>
                 <Link to="/new" className="nav-button">➕ Create New Post</Link>
@@ -117,7 +117,7 @@ function App() {
         } />
 
         <Route path="/new" element={<PostForm onPostCreated={fetchPosts} />} />
-        <Route path="/post/:id" element={<PostDetail isAdmin={isAdmin} />} />
+        <Route path="/post/:id" element={<PostDetail isAdmin={isAdmin} onPostDeleted={fetchPosts} />} />
         <Route path="/edit/:id" element={<PostForm mode="edit" isAdmin={isAdmin} />} />
         <Route path="/guestbook" element={<Guestbook isAdmin={isAdmin} />} />
         <Route path="/admin" element={<AdminLogin onLogin={setIsAdmin} />} />

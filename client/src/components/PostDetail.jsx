@@ -2,7 +2,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import axios from 'axios';
 
-function PostDetail({ isAdmin} ) {
+function PostDetail({ isAdmin, onPostDeleted }) {
   const { id } = useParams();
   const navigate = useNavigate();
   const [post, setPost] = useState(null);
@@ -20,6 +20,7 @@ function PostDetail({ isAdmin} ) {
       axios.delete(`https://my-blog-project-2485.onrender.com/posts/${id}`)
         .then(() => {
           alert("Post deleted.");
+          if (onPostDeleted) onPostDeleted(); // ✅ Refresh posts
           navigate('/');
         });
     }

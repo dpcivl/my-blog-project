@@ -48,6 +48,7 @@ function PostForm({ onPostCreated, mode = 'create' }) {
         axios[method](url, formData)
             .then(() => {
                 alert(mode === 'edit' ? 'Post updated' : 'Post created!');
+                if (onPostCreated) onPostCreated();
                 navigate('/');
             })
             .catch(err => {
