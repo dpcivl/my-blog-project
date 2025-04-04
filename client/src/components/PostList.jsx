@@ -23,9 +23,15 @@ function PostList({ posts }) {
             </div>
             {post.image && (
               <img
-              src={`https://my-blog-project-2485.onrender.com/uploads/${post.image}`}
-              alt=""
-              className="post-thumbnail"
+                src={post.image}  // ✅ now using full Firebase URL
+                alt=""
+                style={{
+                  width: "80px",
+                  height: "80px",
+                  objectFit: "cover",
+                  borderRadius: "6px",
+                  marginLeft: "12px"
+                }}
               />
             )}
           </div>

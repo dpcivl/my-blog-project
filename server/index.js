@@ -34,9 +34,11 @@ admin.initializeApp({
 });
 const bucket = admin.storage().bucket();
 
-app.use(cors());
+app.use(cors({
+  origin: ['http://localhost:5173', 'https://dpcivl.vercel.app/'], // adjust for your dev + prod frontend
+  credentials: true
+}));
 app.use(bodyParser.json());
-app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 app.use(express.json());
 
 app.post('/admin/login', (req, res) => {
@@ -113,7 +115,21 @@ app.put('/posts/:id', upload.single('image'), async (req, res) => {
     };
 
     if (req.file) {
-        update.image = req.file.filename;
+      const filename = `${uuidv4()}-${req.file.originalname}`;
+      const upload = await bucket.upload(req.file.path, {
+        destination: filename,
+        metadata: {
+          metadata: {
+            firebaseStorageDownloadTokens: uuidv4()
+          }
+        }
+      });
+    
+      const file = upload[0];
+      const token = file.metadata.metadata.firebaseStorageDownloadTokens;
+      update.image = `https://firebasestorage.googleapis.com/v0/b/${bucket.name}/o/${encodeURIComponent(filename)}?alt=media&token=${token}`;
+    
+      fs.unlinkSync(req.file.path);
     }
 
     const post = await Post.findByIdAndUpdate(req.params.id, update, { new: true });
@@ -163,7 +179,7 @@ app.delete('/guestbook/delete/:id', async (req, res) => {
       }
   
       // ✅ Guest mode — verify password
-      const match = await bcrypt.compare(password, message.passwordHash);
+      const match = await bcrypt.compare(password, message.password);
       if (!match) return res.status(401).json({ message: 'Wrong password' });
   
       await GuestbookMessage.findByIdAndDelete(id);
