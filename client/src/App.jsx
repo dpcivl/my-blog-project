@@ -5,6 +5,7 @@ import PostDetail from './components/PostDetail';
 import CategoryTabs from './components/CategoryTabs';
 import Guestbook from './components/Guestbook';
 import AdminLogin from "./components/AdminLogin";
+import AdminGuestbook from './components/AdminGuestbook';
 import { useEffect, useState } from 'react';
 import axios from 'axios';
 
@@ -71,6 +72,9 @@ function App() {
       <div style={{ marginBottom: '20px' }}>
         <Link to="/" className="nav-button">🏠 Home</Link>
         <Link to="/guestbook" className="nav-button">💬 Guestbook</Link>
+        {isAdmin && (
+          <Link to="/admin/guestbook" className="nav-button">📂 Manage Guestbook</Link>
+        )}
 
         {!isAdmin && (
           <Link to="/admin" className="nav-button">🔐 Admin Login</Link>
@@ -111,6 +115,9 @@ function App() {
         <Route path="/post/:id" element={<PostDetail isAdmin={isAdmin} />} />
         <Route path="/edit/:id" element={<PostForm mode="edit" isAdmin={isAdmin} />} />
         <Route path="/guestbook" element={<Guestbook isAdmin={isAdmin} />} />
+        {isAdmin && (
+          <Route path="/admin/guestbook" element={<AdminGuestbook />} />
+        )}
         <Route path="/admin" element={<AdminLogin onLogin={setIsAdmin} />} />
       </Routes>
     </div>
