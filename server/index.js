@@ -16,6 +16,7 @@ const upload = multer({
     dest: path.join(__dirname, 'uploads')
 });
 const app = express();
+const bcrypt = require('bcrypt');
 const PORT = 3000;
 
 app.use(cors());
@@ -91,14 +92,26 @@ app.put('/posts/:id', upload.single('image'), async (req, res) => {
 });
 
 app.get('/guestbook', async (req, res) => {
-    const messages = await GuestbookMessage.find({ hidden: false }).sort({ date: -1 });
+    const messages = await GuestbookMessage.find({ hidden: false })
+      .select('-password') // 👈 exclude password field
+      .sort({ date: -1 });
+  
     res.json(messages);
   });
 
 app.post('/guestbook', async (req, res) => {
+    const { name, message, password } = req.body;
+  
+    if (!password) {
+      return res.status(400).json({ error: "Password is required" });
+    }
+  
+    const hashedPassword = await bcrypt.hash(password, 10);
+  
     const newMsg = new GuestbookMessage({
-      name: req.body.name,
-      message: req.body.message
+      name,
+      message,
+      password: hashedPassword
     });
   
     await newMsg.save();
@@ -107,6 +120,16 @@ app.post('/guestbook', async (req, res) => {
 
 // DELETE (Guest deletes permanently)
 app.delete('/guestbook/delete/:id', async (req, res) => {
+    const { password } = req.body;
+    const msg = await GuestbookMessage.findById(req.params.id);
+  
+    if (!msg) return res.status(404).json({ error: "Not found" });
+  
+    const isMatch = await bcrypt.compare(password, msg.password);
+    if (!isMatch) {
+      return res.status(403).json({ error: "Incorrect password" });
+    }
+  
     await GuestbookMessage.findByIdAndDelete(req.params.id);
     res.json({ message: "Permanently deleted" });
   });
