@@ -93,8 +93,9 @@ app.put('/posts/:id', upload.single('image'), async (req, res) => {
 
 app.get('/guestbook', async (req, res) => {
     const messages = await fs.readJson(GUESTBOOK_FILE);
-    res.json(messages);
-});
+    const visible = messages.filter(msg => !msg.hidden);
+    res.json(visible);
+  });
 
 app.post('/guestbook', async (req, res) => {
     const messages = await fs.readJson(GUESTBOOK_FILE);
@@ -117,3 +118,8 @@ app.delete('/guestbook/:id', async (req, res) => {
     await fs.writeJson(GUESTBOOK_FILE, messages, { spaces: 2 });
     res.json({ message: "Deleted" });
 });
+
+app.get('/guestbook/all', async (req, res) => {
+    const messages = await fs.readJson(GUESTBOOK_FILE);
+    res.json(messages); // includes hidden ones
+  });

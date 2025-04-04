@@ -8,8 +8,12 @@ function Guestbook() {
 
     function fetchMessages() {
         axios.get('https://my-blog-project-2485.onrender.com/guestbook')
-            .then(res => setMessages(res.data));
-    }
+          .then(res => {
+            // only show non-hidden messages
+            const visible = res.data.filter(m => !m.hidden);
+            setMessages(visible);
+          });
+      }
 
     useEffect(() => {
         fetchMessages();
