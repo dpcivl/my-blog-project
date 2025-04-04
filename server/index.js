@@ -31,6 +31,17 @@ fs.writeJsonSync(POST_FILE, [], { spaces: 2 });
 fs.ensureFileSync(GUESTBOOK_FILE);
 fs.writeJsonSync(GUESTBOOK_FILE, [], { spaces: 2 });
 
+app.post('/admin/login', (req, res) => {
+    console.log("Received password:", req.body.password);
+    console.log("Expected password:", process.env.ADMIN_PASSWORD);
+  
+    if (req.body.password === process.env.ADMIN_PASSWORD) {
+      return res.json({ success: true });
+    } else {
+      return res.status(401).json({ success: false });
+    }
+  });
+
 app.get('/posts', async (req, res) => {
     const posts = await Post.find().sort({ date: -1 });
     res.json(posts);

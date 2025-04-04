@@ -2,7 +2,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import axios from 'axios';
 
-function PostDetail() {
+function PostDetail({ isAdmin} ) {
   const { id } = useParams();
   const navigate = useNavigate();
   const [post, setPost] = useState(null);
@@ -48,8 +48,12 @@ function PostDetail() {
         />
       )}
       <div style={{ marginTop: "20px" }}>
-        <button onClick={handleDelete}>🗑️ Delete</button>
-        <button onClick={() => navigate(`/edit/${post._id}`)}>✏️ Edit</button>
+          {isAdmin && (
+            <>
+              <button onClick={handleDelete}>🗑️</button>
+              <button onClick={() => navigate(`/edit/${post._id}`)}>✏️</button>
+            </>
+          )}
       </div>
     </div>
   );
