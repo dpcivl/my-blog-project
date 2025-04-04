@@ -6,10 +6,10 @@ mongoose.connect(process.env.MONGODB_URI, {
   .catch(err => console.error("❌ MongoDB connection error:", err));
 
 const Post = require('./models/Post');
+const GuestbookMessage = require('./models/GuestbookMessage');
 const express = require('express');
 const cors = require('cors');
 const bodyParser = require('body-parser');
-const fs = require('fs-extra');
 const multer = require('multer');
 const path = require('path');
 const upload = multer({
@@ -23,7 +23,6 @@ app.use(bodyParser.json());
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 const POST_FILE = './posts.json';
-const GUESTBOOK_FILE = './guestbook.json';
 
 // Ensure post file exists
 fs.ensureFileSync(POST_FILE);
@@ -92,32 +91,31 @@ app.put('/posts/:id', upload.single('image'), async (req, res) => {
 });
 
 app.get('/guestbook', async (req, res) => {
-    const messages = await fs.readJson(GUESTBOOK_FILE);
-    const visible = messages.filter(msg => !msg.hidden);
-    res.json(visible);
+    const messages = await GuestbookMessage.find({ hidden: false }).sort({ date: -1 });
+    res.json(messages);
   });
 
 app.post('/guestbook', async (req, res) => {
-    const messages = await fs.readJson(GUESTBOOK_FILE);
-    const newMsg = {
-        id: Date.now(),
-        name: req.body.name,
-        message: req.body.message,
-        hidden: false,
-        date: new Date().toISOString()
-    };
-    messages.push(newMsg);
-    await fs.writeJson(GUESTBOOK_FILE, messages, { spaces: 2 });
+    const newMsg = new GuestbookMessage({
+      name: req.body.name,
+      message: req.body.message
+    });
+  
+    await newMsg.save();
     res.json({ message: "Message posted" });
-});
+  });
 
-app.delete('/guestbook/:id', async (req, res) => {
-    const id = Number(req.params.id);
-    let messages = await fs.readJson(GUESTBOOK_FILE);
-    messages = messages.filter(msg => msg.id !== id);
-    await fs.writeJson(GUESTBOOK_FILE, messages, { spaces: 2 });
-    res.json({ message: "Deleted" });
-});
+// DELETE (Guest deletes permanently)
+app.delete('/guestbook/delete/:id', async (req, res) => {
+    await GuestbookMessage.findByIdAndDelete(req.params.id);
+    res.json({ message: "Permanently deleted" });
+  });
+  
+// HIDE (Admin hides)
+app.post('/guestbook/hide/:id', async (req, res) => {
+    await GuestbookMessage.findByIdAndUpdate(req.params.id, { hidden: true });
+    res.json({ message: "Message hidden" });
+  });
 
 app.get('/guestbook/all', async (req, res) => {
     const messages = await fs.readJson(GUESTBOOK_FILE);

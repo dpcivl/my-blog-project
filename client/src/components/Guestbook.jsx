@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import axios from 'axios';
 
-function Guestbook() {
+function Guestbook({ isAdmin }) {
     const [messages, setMessages] = useState([]);
     const [name, setName] = useState('');
     const [msg, setMsg] = useState('');
@@ -32,10 +32,17 @@ function Guestbook() {
 
     function handleDelete(id) {
         if (confirm("Delete this message?")) {
-            axios.delete(`https://my-blog-project-2485.onrender.com/guestbook/${id}`)
-                .then(() => fetchMessages());
+          axios.delete(`https://my-blog-project-2485.onrender.com/guestbook/delete/${id}`)
+            .then(() => fetchMessages());
         }
-    }
+      }
+
+    function handleHide(id) {
+        if (confirm("Hide this message from the public?")) {
+          axios.post(`https://my-blog-project-2485.onrender.com/guestbook/hide/${id}`)
+            .then(() => fetchMessages());
+        }
+      }
 
     return (
         <div>
@@ -61,11 +68,17 @@ function Guestbook() {
             <hr />
 
             {messages.map(m => (
-            <div key={m.id} style={{ marginBottom: '12px' }}>
-                <p><strong>{m.name}</strong> - {new Date(m.date).toLocaleString()}</p>
-                <p>{m.message}</p>
-                <button onClick={() => handleDelete(m.id)}>🗑️</button>
-            </div>
+                <div key={m._id} style={{ marginBottom: '12px' }}>
+                    <p><strong>{m.name}</strong> - {new Date(m.date).toLocaleString()}</p>
+                    <p>{m.message}</p>
+
+                    {/* ✅ Admin sees hide button */}
+                    {isAdmin ? (
+                    <button onClick={() => handleHide(m._id)}>🙈 Hide</button>
+                    ) : (
+                    <button onClick={() => handleDelete(m._id)}>🗑️ Delete</button>
+                    )}
+                </div>
             ))}
         </div>
     );

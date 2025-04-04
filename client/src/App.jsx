@@ -110,7 +110,7 @@ function App() {
 
         <Route path="/post/:id" element={<PostDetail isAdmin={isAdmin} />} />
         <Route path="/edit/:id" element={<PostForm mode="edit" isAdmin={isAdmin} />} />
-        <Route path="/guestbook" element={<Guestbook />} />
+        <Route path="/guestbook" element={<Guestbook isAdmin={isAdmin} />} />
         <Route path="/admin" element={<AdminLogin onLogin={setIsAdmin} />} />
       </Routes>
     </div>
