@@ -5,7 +5,7 @@ function AdminGuestbook() {
   const [messages, setMessages] = useState([]);
 
   useEffect(() => {
-    axios.get('https://my-blog-project-2485.onrender.com/guestbook/all') // replace with your real URL
+    axios.get('https://my-blog-project-2485.onrender.com/guestbook/all')
       .then(res => setMessages(res.data));
   }, []);
 
