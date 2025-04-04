@@ -22,14 +22,7 @@ const PORT = 3000;
 app.use(cors());
 app.use(bodyParser.json());
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
-
-// const POST_FILE = './posts.json';
-
-// // Ensure post file exists
-// fs.ensureFileSync(POST_FILE);
-// fs.writeJsonSync(POST_FILE, [], { spaces: 2 });
-// fs.ensureFileSync(GUESTBOOK_FILE);
-// fs.writeJsonSync(GUESTBOOK_FILE, [], { spaces: 2 });
+app.use(express.json());
 
 app.post('/admin/login', (req, res) => {
     if (req.body.password === process.env.ADMIN_PASSWORD) {
@@ -120,18 +113,30 @@ app.post('/guestbook', async (req, res) => {
 
 // DELETE (Guest deletes permanently)
 app.delete('/guestbook/delete/:id', async (req, res) => {
-    const { password } = req.body;
-    const msg = await GuestbookMessage.findById(req.params.id);
+    try {
+      const id = req.params.id;
+      const password = req.body?.password;
   
-    if (!msg) return res.status(404).json({ error: "Not found" });
+      const message = await GuestbookMessage.findById(id);
+      if (!message) return res.status(404).json({ message: 'Not found' });
   
-    const isMatch = await bcrypt.compare(password, msg.password);
-    if (!isMatch) {
-      return res.status(403).json({ error: "Incorrect password" });
+      // ✅ Admin mode (no password)
+      if (!password) {
+        await GuestbookMessage.findByIdAndDelete(id);
+        return res.json({ message: 'Deleted by admin' });
+      }
+  
+      // ✅ Guest mode — verify password
+      const match = await bcrypt.compare(password, message.passwordHash);
+      if (!match) return res.status(401).json({ message: 'Wrong password' });
+  
+      await GuestbookMessage.findByIdAndDelete(id);
+      return res.json({ message: 'Deleted by guest' });
+  
+    } catch (err) {
+      console.error('❌ Deletion failed:', err);
+      return res.status(500).json({ message: 'Internal server error' });
     }
-  
-    await GuestbookMessage.findByIdAndDelete(req.params.id);
-    res.json({ message: "Permanently deleted" });
   });
   
 // HIDE (Admin hides)
@@ -140,7 +145,7 @@ app.post('/guestbook/hide/:id', async (req, res) => {
     res.json({ message: "Message hidden" });
   });
 
-  app.get('/guestbook/all', async (req, res) => {
+app.get('/guestbook/all', async (req, res) => {
     const messages = await GuestbookMessage.find().sort({ date: -1 });
     console.log("Fetched all messages:", messages);
     res.json(messages);

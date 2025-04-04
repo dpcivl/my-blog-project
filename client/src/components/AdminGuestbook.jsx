@@ -24,9 +24,18 @@ function AdminGuestbook() {
   }
 
   function handleDelete(id) {
-    if (confirm("Are you sure you want to permanently delete this message?")) {
-      axios.delete(`https://my-blog-project-2485.onrender.com/guestbook/delete/${id}`)
-        .then(() => window.location.reload());
+    if (confirm("Delete this message permanently?")) {
+      axios.delete(`https://my-blog-project-2485.onrender.com/guestbook/delete/${id}`, {
+        data: {}  // ✅ Let backend know this is admin (no password)
+      })
+      .then(() => {
+        alert("Message deleted");
+        setMessages(prev => prev.filter(m => m._id !== id));
+      })
+      .catch(err => {
+        alert("Failed to delete");
+        console.error(err);
+      });
     }
   }
 

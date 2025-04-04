@@ -45,9 +45,13 @@ function Guestbook({ isAdmin }) {
         axios.delete(`https://my-blog-project-2485.onrender.com/guestbook/delete/${id}`, {
           data: { password: pw }
         })
-        .then(() => fetchMessages())
+        .then(() => {
+          alert("Message deleted");
+          setMessages(prev => prev.filter(m => m._id !== id));
+        })
         .catch(err => {
           alert("Wrong password or failed to delete.");
+          console.error(err);
         });
       }
 
@@ -120,7 +124,7 @@ function Guestbook({ isAdmin }) {
                         whiteSpace: 'nowrap'
                     }}
                     >
-                    {isAdmin ? '🙈 Hide' : '🗑️ Delete'}
+                    {isAdmin ? '🙈 Hide' : '🗑️ Delete (password required)'}
                     </button>
                 </div>
                 ))}

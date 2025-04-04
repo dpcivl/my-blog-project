@@ -120,10 +120,8 @@ function App() {
         <Route path="/post/:id" element={<PostDetail isAdmin={isAdmin} />} />
         <Route path="/edit/:id" element={<PostForm mode="edit" isAdmin={isAdmin} />} />
         <Route path="/guestbook" element={<Guestbook isAdmin={isAdmin} />} />
-        {isAdmin && (
-          <Route path="/admin/guestbook" element={<AdminGuestbook />} />
-        )}
         <Route path="/admin" element={<AdminLogin onLogin={setIsAdmin} />} />
+        <Route path="/admin/guestbook" element={isAdmin ? <AdminGuestbook /> : <p>Access denied</p>} />
       </Routes>
     </div>
   );
