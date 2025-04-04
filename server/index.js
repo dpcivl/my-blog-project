@@ -30,7 +30,7 @@ const serviceAccount = JSON.parse(
 
 admin.initializeApp({
   credential: admin.credential.cert(serviceAccount),
-  storageBucket: "hyoinparkblog.appspot.com"
+  storageBucket: "gs://hyoinparkblog.firebasestorage.app"
 });
 const bucket = admin.storage().bucket();
 
