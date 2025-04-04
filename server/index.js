@@ -22,13 +22,13 @@ app.use(cors());
 app.use(bodyParser.json());
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
-const POST_FILE = './posts.json';
+// const POST_FILE = './posts.json';
 
-// Ensure post file exists
-fs.ensureFileSync(POST_FILE);
-fs.writeJsonSync(POST_FILE, [], { spaces: 2 });
-fs.ensureFileSync(GUESTBOOK_FILE);
-fs.writeJsonSync(GUESTBOOK_FILE, [], { spaces: 2 });
+// // Ensure post file exists
+// fs.ensureFileSync(POST_FILE);
+// fs.writeJsonSync(POST_FILE, [], { spaces: 2 });
+// fs.ensureFileSync(GUESTBOOK_FILE);
+// fs.writeJsonSync(GUESTBOOK_FILE, [], { spaces: 2 });
 
 app.post('/admin/login', (req, res) => {
     if (req.body.password === process.env.ADMIN_PASSWORD) {
