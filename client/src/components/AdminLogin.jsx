@@ -9,17 +9,17 @@ function AdminLogin({ onLogin }) {
   function handleSubmit(e) {
     e.preventDefault();
         axios.post("https://my-blog-project-2485.onrender.com/admin/login", { password })
-    .then(res => {
-        if (res.data.success) {
-        localStorage.setItem("isAdmin", "true");
-        onLogin(true);
-        navigate("/");
-        }
-    })
-    .catch(err => {
-        alert("Login failed");
-    });
-  }
+        .then(res => {
+            if (res.data.success) {
+            localStorage.setItem("isAdmin", "true");
+            onLogin(true);
+            navigate("/");
+            }
+        })
+        .catch(err => {
+            alert("Login failed");
+        });
+    }
 
   return (
     <form onSubmit={handleSubmit}>
