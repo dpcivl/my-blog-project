@@ -41,7 +41,7 @@ function PostDetail({ isAdmin, onPostDeleted }) {
       <p className="post-content">{post.content}</p>
       {post.image && (
         <img
-          src={`https://my-blog-project-2485.onrender.com/uploads/${post.image}`}
+          src={post.image}
           alt=""
           style={{
             width: '100%',
