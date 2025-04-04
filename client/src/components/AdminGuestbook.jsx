@@ -23,25 +23,70 @@ function AdminGuestbook() {
     }
   }
 
+  function handleDelete(id) {
+    if (confirm("Are you sure you want to permanently delete this message?")) {
+      axios.delete(`https://my-blog-project-2485.onrender.com/guestbook/delete/${id}`)
+        .then(() => window.location.reload());
+    }
+  }
+
   return (
     <div>
       <h2>📂 Admin Guestbook View</h2>
       {messages.map(m => (
         <div key={m._id} style={{
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'center',
+          padding: '10px 12px',
+          marginBottom: '10px',
+          backgroundColor: m.hidden ? '#ffecec' : '#f0fff0',
           border: '1px solid #ccc',
-          padding: '12px',
-          marginBottom: '12px',
-          backgroundColor: m.hidden ? '#ffecec' : '#f0fff0'
+          borderRadius: '6px',
+          boxShadow: '0 1px 4px rgba(0,0,0,0.06)'
         }}>
-          <p><strong>{m.name}</strong> - {new Date(m.date).toLocaleString()}</p>
-          <p>{m.message}</p>
-          {m.hidden ? (
-            <button onClick={() => handleUnhide(m._id)}>✅ Unhide</button>
-          ) : (
-            <button onClick={() => handleHide(m._id)}>🙈 Hide</button>
-          )}
+          <div style={{ flex: 1, textAlign: 'left' }}>
+            <p style={{ margin: '0 0 4px 0' }}>
+              <strong>{m.name}</strong> • {new Date(m.date).toLocaleString()}
+            </p>
+            <p style={{ margin: 0 }}>{m.message}</p>
+          </div>
+
+          <div style={{ display: 'flex', gap: '8px' }}>
+            <button
+              onClick={() => m.hidden ? handleUnhide(m._id) : handleHide(m._id)}
+              style={{
+                padding: '6px 10px',
+                fontSize: '0.9rem',
+                backgroundColor: m.hidden ? '#5cb85c' : '#f0ad4e',
+                color: '#fff',
+                border: 'none',
+                borderRadius: '4px',
+                cursor: 'pointer',
+                whiteSpace: 'nowrap'
+              }}
+            >
+              {m.hidden ? '✅ Unhide' : '🙈 Hide'}
+            </button>
+
+            <button
+              onClick={() => handleDelete(m._id)}
+              style={{
+                padding: '6px 10px',
+                fontSize: '0.9rem',
+                backgroundColor: '#d9534f',
+                color: '#fff',
+                border: 'none',
+                borderRadius: '4px',
+                cursor: 'pointer'
+              }}
+            >
+              🗑️ Delete
+            </button>
+          </div>
         </div>
       ))}
+
     </div>
   );
 }
