@@ -110,8 +110,8 @@ function App() {
             <section className="streak-container">
               <h2 className="streak-title">🔥 Current Streaks</h2>
               <div className="streak-bar">
-                <span className="streak">📒 JavaScript: {calculateStreak(posts, 'JavaScript')}</span>
-                <span className="streak">📘 Roblox Studio: {calculateStreak(posts, 'Roblox Studio')}</span>
+                <span className="streak">📒 Offline: {calculateStreak(posts, 'Offline')}</span>
+                <span className="streak">📘 Online: {calculateStreak(posts, 'Online')}</span>
                 <span className="streak">📙 Blender: {calculateStreak(posts, 'Blender')}</span>
               </div>
             </section>

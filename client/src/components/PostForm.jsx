@@ -72,8 +72,8 @@ function PostForm({ onPostCreated, mode = 'create' }) {
 
             <select value={category} onChange={e => setCategory(e.target.value)} style={{ marginBottom: '8px' }}>
                 <option>Blender</option>
-                <option>Roblox Studio</option>
-                <option>JavaScript</option>
+                <option>Online</option>
+                <option>Offline</option>
             </select>
 
             {existingImage && (

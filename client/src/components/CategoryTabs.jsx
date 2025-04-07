@@ -1,5 +1,5 @@
 function CategoryTabs({ current, onChange }) {
-    const categories = ['All', 'Blender', 'Roblox Studio', 'JavaScript'];
+    const categories = ['All', 'Blender', 'Online', 'Offline'];
 
     return (
         <div style={{ marginBottom: "16px" }}>
