@@ -72,8 +72,8 @@ function PostForm({ onPostCreated, mode = 'create' }) {
 
             <select value={category} onChange={e => setCategory(e.target.value)} style={{ marginBottom: '8px' }}>
                 <option>Blender</option>
-                <option>Online</option>
-                <option>Offline</option>
+                <option>Game</option>
+                <option>IoT</option>
             </select>
 
             {existingImage && (
