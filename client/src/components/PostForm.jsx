@@ -5,7 +5,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import rehypeHighlight from 'rehype-highlight';
-import 'highlight.js/styles/github.css'; // Choose your theme!
+import 'highlight.js/styles/github.css';
 
 function PostForm({ onPostCreated, mode = 'create' }) {
   const [title, setTitle] = useState('');
@@ -28,7 +28,7 @@ function PostForm({ onPostCreated, mode = 'create' }) {
           setTitle(post.title);
           setContent(post.content);
           setCategory(post.category);
-          setExistingImage(post.image); 
+          setExistingImage(post.image);
           setIsLoading(false);
         })
         .catch(() => {
@@ -41,40 +41,38 @@ function PostForm({ onPostCreated, mode = 'create' }) {
   useEffect(() => {
     const textarea = contentRef.current;
     if (!textarea) return;
-  
+
     const handlePaste = async (e) => {
       const items = e.clipboardData?.items;
       if (!items) return;
-  
+
       for (const item of items) {
         if (item.type.indexOf('image') === 0) {
           const file = item.getAsFile();
-  
-          // Upload to Firebase
+
           const formData = new FormData();
           formData.append("image", file);
           const res = await axios.post("https://my-blog-project-2485.onrender.com/upload-image", formData);
-  
-          // Insert markdown image link
+
           const url = res.data.url;
           const imgMarkdown = `\n![screenshot](${url})\n`;
           setContent(prev => prev + imgMarkdown);
-  
+
           alert("✅ Screenshot uploaded and inserted into content!");
         }
       }
     };
-  
+
     textarea.addEventListener('paste', handlePaste);
     return () => textarea.removeEventListener('paste', handlePaste);
   }, []);
-  
 
   function handleImageChange(e) {
     const file = e.target.files[0];
     if (file) {
       setImage(file);
       setImagePreviewUrl(URL.createObjectURL(file));
+      setRemoveExistingImage(false); // Prevent unintentional deletion
     }
   }
 
@@ -115,7 +113,7 @@ function PostForm({ onPostCreated, mode = 'create' }) {
       <h2>{mode === 'edit' ? 'Edit Post' : 'Create New Post'}</h2>
 
       <label style={{ fontWeight: 'bold', marginBottom: '6px', display: 'block' }}>
-    📌   Post Title
+        📌 Post Title
       </label>
       <input
         value={title}
@@ -123,37 +121,99 @@ function PostForm({ onPostCreated, mode = 'create' }) {
         placeholder="Enter a catchy title..."
         required
         style={{
-            width: '100%',
-            fontSize: '1.4rem',
-            fontWeight: 'bold',
-            padding: '12px 16px',
-            border: '1px solid #ccc',
-            borderRadius: '8px',
-            marginBottom: '16px',
-            boxShadow: '0 1px 4px rgba(0,0,0,0.1)'
+          width: '100%',
+          fontSize: '1.4rem',
+          fontWeight: 'bold',
+          padding: '12px 16px',
+          border: '1px solid #ccc',
+          borderRadius: '8px',
+          marginBottom: '16px',
+          boxShadow: '0 1px 4px rgba(0,0,0,0.1)'
         }}
+      />
+
+      <label style={{ fontWeight: 'bold', marginBottom: '6px', display: 'block' }}>
+        🖼️ Thumbnail Image
+      </label>
+
+      {existingImage && !imagePreviewUrl && (
+        <div style={{ marginBottom: '12px' }}>
+          <p style={{ margin: '4px 0' }}>📷 Click current image to remove:</p>
+          <img
+            src={existingImage}
+            alt="Current"
+            onClick={() => {
+              setExistingImage(null);
+              setRemoveExistingImage(true);
+            }}
+            style={{
+              width: '100px',
+              borderRadius: '4px',
+              border: '1px solid #ccc',
+              cursor: 'pointer',
+              opacity: 0.9,
+              transition: 'opacity 0.2s ease',
+            }}
+            onMouseOver={(e) => e.currentTarget.style.opacity = 0.6}
+            onMouseOut={(e) => e.currentTarget.style.opacity = 0.9}
+            title="Click to remove"
+          />
+        </div>
+      )}
+
+      {!existingImage && !imagePreviewUrl && (
+        <input
+          type="file"
+          accept="image/*"
+          onChange={handleImageChange}
+          style={{ marginBottom: '12px' }}
         />
+      )}
+
+      {imagePreviewUrl && (
+        <div style={{ marginBottom: '12px' }}>
+          <p style={{ margin: '4px 0' }}>📷 Click image to remove:</p>
+          <img
+            src={imagePreviewUrl}
+            alt="Preview"
+            onClick={() => {
+              setImage(null);
+              setImagePreviewUrl(null);
+            }}
+            style={{
+              width: '100px',
+              borderRadius: '4px',
+              border: '1px solid #ccc',
+              cursor: 'pointer',
+              opacity: 0.9,
+              transition: 'opacity 0.2s ease',
+            }}
+            onMouseOver={(e) => e.currentTarget.style.opacity = 0.6}
+            onMouseOut={(e) => e.currentTarget.style.opacity = 0.9}
+            title="Click to remove"
+          />
+        </div>
+      )}
 
       <label style={{ fontWeight: 'bold', marginTop: '12px', display: 'block' }}>
         ✏️ Write your post
       </label>
 
-        <div style={{
+      <div style={{
         display: 'flex',
         gap: '16px',
         alignItems: 'start',
         flexWrap: 'wrap',
-        }}>
-
-        {/* Left: Editor */}
+        marginBottom: '16px'
+      }}>
         <textarea
-            ref={contentRef}
-            value={content}
-            onChange={e => setContent(e.target.value)}
-            placeholder="Write markdown here..."
-            required
-            rows={20}
-            style={{
+          ref={contentRef}
+          value={content}
+          onChange={e => setContent(e.target.value)}
+          placeholder="Write markdown here..."
+          required
+          rows={20}
+          style={{
             flex: 1,
             minWidth: '300px',
             height: '500px',
@@ -163,12 +223,11 @@ function PostForm({ onPostCreated, mode = 'create' }) {
             fontFamily: 'monospace',
             whiteSpace: 'pre-wrap',
             overflow: 'auto',
-            }}
+          }}
         />
 
-        {/* Right: Preview */}
         <div
-            style={{
+          style={{
             flex: 1,
             minWidth: '300px',
             height: '500px',
@@ -179,102 +238,50 @@ function PostForm({ onPostCreated, mode = 'create' }) {
             background: '#f9f9f9',
             whiteSpace: 'pre-wrap',
             textAlign: 'left',
-            }}
+          }}
         >
-            <ReactMarkdown
+          <ReactMarkdown
             children={content}
             remarkPlugins={[remarkGfm]}
             rehypePlugins={[rehypeHighlight]}
             components={{
-                img: ({ node, ...props }) => (
+              img: ({ node, ...props }) => (
                 <img
-                    {...props}
-                    style={{ maxWidth: '100%', borderRadius: '6px', marginTop: '10px' }}
-                    alt=""
+                  {...props}
+                  style={{ maxWidth: '100%', borderRadius: '6px', marginTop: '10px' }}
+                  alt=""
                 />
-                ),
-                a: ({ node, ...props }) => (
+              ),
+              a: ({ node, ...props }) => (
                 <a {...props} target="_blank" rel="noopener noreferrer" />
-                ),
-                code({ node, inline, className, children, ...props }) {
+              ),
+              code({ node, inline, className, children, ...props }) {
                 return !inline ? (
-                    <pre>
+                  <pre>
                     <code className={className} {...props}>
-                        {children}
+                      {children}
                     </code>
-                    </pre>
+                  </pre>
                 ) : (
-                    <code className={className} {...props}>
+                  <code className={className} {...props}>
                     {children}
-                    </code>
+                  </code>
                 );
-                }
+              }
             }}
-            />
+          />
         </div>
-        </div>
-
-
+      </div>
 
       <select
         value={category}
         onChange={e => setCategory(e.target.value)}
-        style={{ marginBottom: '8px' }}
+        style={{ marginBottom: '16px', padding: '6px 12px' }}
       >
         <option>Blender</option>
         <option>Game</option>
         <option>IoT</option>
       </select>
-
-      {existingImage && !imagePreviewUrl && (
-        <div style={{ marginBottom: '12px' }}>
-            <p style={{ margin: '4px 0' }}>📷 Click current image to remove:</p>
-            <img
-            src={existingImage}
-            alt="Current"
-            onClick={() => {
-                setExistingImage(null);
-                setRemoveExistingImage(true); // ✅ mark for backend
-            }}
-            style={{
-                width: '100px',
-                borderRadius: '4px',
-                border: '1px solid #ccc',
-                cursor: 'pointer',
-                opacity: 0.9,
-                transition: 'opacity 0.2s ease',
-            }}
-            onMouseOver={(e) => e.currentTarget.style.opacity = 0.6}
-            onMouseOut={(e) => e.currentTarget.style.opacity = 0.9}
-            title="Click to remove current image"
-            />
-        </div>
-        )}
-
-        {imagePreviewUrl && (
-        <div style={{ marginBottom: '12px' }}>
-            <p style={{ margin: '4px 0' }}>📷 Click image to remove:</p>
-            <img
-            src={imagePreviewUrl}
-            alt="Preview"
-            onClick={() => {
-                setImage(null);
-                setImagePreviewUrl(null);
-            }}
-            style={{
-                width: '100px',
-                borderRadius: '4px',
-                border: '1px solid #ccc',
-                cursor: 'pointer',
-                opacity: 0.9,
-                transition: 'opacity 0.2s ease',
-            }}
-            onMouseOver={(e) => e.currentTarget.style.opacity = 0.6}
-            onMouseOut={(e) => e.currentTarget.style.opacity = 0.9}
-            title="Click to remove image"
-            />
-        </div>
-        )}
 
       <button type="submit">Post</button>
     </form>
