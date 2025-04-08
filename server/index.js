@@ -85,28 +85,22 @@ app.post('/posts', upload.single('image'), async (req, res) => {
 });
 
 app.post('/upload-image', upload.single('image'), async (req, res) => {
-  try {
-    const filename = `${uuidv4()}-${req.file.originalname}`;
-    const upload = await bucket.upload(req.file.path, {
-      destination: filename,
+  const filename = `${uuidv4()}-${req.file.originalname}`;
+  const upload = await bucket.upload(req.file.path, {
+    destination: filename,
+    metadata: {
       metadata: {
-        metadata: {
-          firebaseStorageDownloadTokens: uuidv4()
-        }
+        firebaseStorageDownloadTokens: uuidv4()
       }
-    });
+    }
+  });
 
-    const file = upload[0];
-    const token = file.metadata.metadata.firebaseStorageDownloadTokens;
-    const url = `https://firebasestorage.googleapis.com/v0/b/${bucket.name}/o/${encodeURIComponent(filename)}?alt=media&token=${token}`;
-    
-    fs.unlinkSync(req.file.path); // ✅ remove temp file
+  const file = upload[0];
+  const token = file.metadata.metadata.firebaseStorageDownloadTokens;
+  const url = `https://firebasestorage.googleapis.com/v0/b/${bucket.name}/o/${encodeURIComponent(filename)}?alt=media&token=${token}`;
 
-    res.json({ url });
-  } catch (err) {
-    console.error("❌ Image upload failed:", err);
-    res.status(500).json({ error: "Image upload failed" });
-  }
+  fs.unlinkSync(req.file.path); // cleanup
+  res.json({ url });
 });
 
 app.get('/posts/:id', async (req, res) => {
