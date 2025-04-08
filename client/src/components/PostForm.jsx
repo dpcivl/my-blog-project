@@ -2,6 +2,11 @@ import { useState, useEffect, useRef } from 'react';
 import axios from 'axios';
 import { useParams, useNavigate } from 'react-router-dom';
 
+import ReactMarkdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
+import rehypeHighlight from 'rehype-highlight';
+import 'highlight.js/styles/github.css'; // Choose your theme!
+
 function PostForm({ onPostCreated, mode = 'create' }) {
   const [title, setTitle] = useState('');
   const [content, setContent] = useState('');
@@ -121,6 +126,55 @@ function PostForm({ onPostCreated, mode = 'create' }) {
         rows={5}
         style={{ width: '100%', marginBottom: '8px' }}
       />
+
+      {/* ✅ Live Preview comes after the textarea */}
+        <label style={{ fontWeight: 'bold', marginTop: '12px', display: 'block' }}>
+        📄 Live Preview
+        </label>
+        <div
+        style={{
+            border: '1px solid #ddd',
+            borderRadius: '6px',
+            padding: '12px',
+            background: '#f9f9f9',
+            marginTop: '8px',
+            marginBottom: '20px',
+            whiteSpace: 'pre-wrap',
+            textAlign: 'left'
+        }}
+        >
+        <ReactMarkdown
+            children={content}
+            remarkPlugins={[remarkGfm]}
+            rehypePlugins={[rehypeHighlight]}
+            components={{
+            img: ({ node, ...props }) => (
+                <img
+                {...props}
+                style={{ maxWidth: '100%', borderRadius: '6px', marginTop: '10px' }}
+                alt=""
+                />
+            ),
+            a: ({ node, ...props }) => (
+                <a {...props} target="_blank" rel="noopener noreferrer" />
+            ),
+            code({ node, inline, className, children, ...props }) {
+                return !inline ? (
+                <pre>
+                    <code className={className} {...props}>
+                    {children}
+                    </code>
+                </pre>
+                ) : (
+                <code className={className} {...props}>
+                    {children}
+                </code>
+                );
+            }
+            }}
+        />
+        </div>
+
 
       <select
         value={category}
