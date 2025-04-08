@@ -27,7 +27,7 @@ function PostForm({ onPostCreated, mode = 'create' }) {
           setTitle(post.title);
           setContent(post.content);
           setCategory(post.category);
-          setExistingImage(post.image);
+          setExistingImage(post.image); 
           setIsLoading(false);
         })
         .catch(() => {
