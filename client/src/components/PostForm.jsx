@@ -109,27 +109,29 @@ function PostForm({ onPostCreated, mode = 'create' }) {
     <form onSubmit={handleSubmit} style={{ marginTop: '24px' }}>
       <h2>{mode === 'edit' ? 'Edit Post' : 'Create New Post'}</h2>
 
+      <label style={{ fontWeight: 'bold', marginBottom: '6px', display: 'block' }}>
+    📌   Post Title
+      </label>
       <input
         value={title}
         onChange={e => setTitle(e.target.value)}
-        placeholder="Title"
+        placeholder="Enter a catchy title..."
         required
-        style={{ width: '100%', marginBottom: '8px' }}
-      />
+        style={{
+            width: '100%',
+            fontSize: '1.4rem',
+            fontWeight: 'bold',
+            padding: '12px 16px',
+            border: '2px solid #4caf50',
+            borderRadius: '8px',
+            marginBottom: '16px',
+            boxShadow: '0 1px 4px rgba(0,0,0,0.1)'
+        }}
+        />
 
-      <textarea
-        ref={contentRef}
-        value={content}
-        onChange={e => setContent(e.target.value)}
-        placeholder="Content"
-        required
-        rows={5}
-        style={{ width: '100%', marginBottom: '8px' }}
-      />
-
-        <label style={{ fontWeight: 'bold', marginTop: '12px', display: 'block' }}>
+      <label style={{ fontWeight: 'bold', marginTop: '12px', display: 'block' }}>
         ✏️ Write your post
-        </label>
+      </label>
 
         <div style={{
         display: 'flex',
@@ -171,6 +173,7 @@ function PostForm({ onPostCreated, mode = 'create' }) {
             borderRadius: '6px',
             background: '#f9f9f9',
             whiteSpace: 'pre-wrap',
+            textAlign: 'left',
             }}
         >
             <ReactMarkdown
