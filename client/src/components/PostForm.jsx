@@ -48,8 +48,10 @@ function PostForm({ onPostCreated, mode = 'create' }) {
     };
 
     const textarea = contentRef.current;
-    textarea.addEventListener('paste', handlePaste);
-    return () => textarea.removeEventListener('paste', handlePaste);
+    if (textarea) {
+      textarea.addEventListener('paste', handlePaste);
+      return () => textarea.removeEventListener('paste', handlePaste);
+    }
   }, []);
 
   function handleImageChange(e) {
@@ -87,9 +89,7 @@ function PostForm({ onPostCreated, mode = 'create' }) {
       });
   }
 
-  if (mode === 'edit' && isLoading) {
-    return <p>Loading post...</p>;
-  }
+  if (mode === 'edit' && isLoading) return <p>Loading post...</p>;
 
   return (
     <form onSubmit={handleSubmit} style={{ marginTop: '24px' }}>
@@ -123,7 +123,7 @@ function PostForm({ onPostCreated, mode = 'create' }) {
         <option>IoT</option>
       </select>
 
-      {existingImage && (
+      {existingImage && !image && (
         <p>
           Current image: <br />
           <img
@@ -141,7 +141,7 @@ function PostForm({ onPostCreated, mode = 'create' }) {
       />
 
       {imagePreviewUrl && (
-        <div style={{ marginBottom: '12px' }}>
+        <div style={{ marginBottom: '12px', position: 'relative', display: 'inline-block' }}>
           <p style={{ margin: '4px 0' }}>📷 Image Preview:</p>
           <img
             src={imagePreviewUrl}
@@ -152,6 +152,29 @@ function PostForm({ onPostCreated, mode = 'create' }) {
               border: '1px solid #ccc'
             }}
           />
+          <button
+            type="button"
+            onClick={() => {
+              setImage(null);
+              setImagePreviewUrl(null);
+            }}
+            style={{
+              position: 'absolute',
+              top: '-8px',
+              right: '-8px',
+              background: '#ff4d4f',
+              border: 'none',
+              borderRadius: '50%',
+              width: '20px',
+              height: '20px',
+              color: '#fff',
+              fontWeight: 'bold',
+              cursor: 'pointer',
+              lineHeight: '1'
+            }}
+          >
+            ×
+          </button>
         </div>
       )}
 
