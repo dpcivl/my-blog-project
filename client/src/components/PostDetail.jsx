@@ -1,5 +1,6 @@
 import { useParams, useNavigate } from 'react-router-dom';
 import { useEffect, useState } from 'react';
+import PostContent from './PostContent';
 import ReactMarkdown from 'react-markdown';
 import axios from 'axios';
 
