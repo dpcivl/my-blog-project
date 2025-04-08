@@ -129,15 +129,34 @@ app.put('/posts/:id', upload.single('image'), async (req, res) => {
     category: req.body.category,
   };
 
+  const post = await Post.findById(req.params.id);
+  if (!post) return res.status(404).json({ message: 'Post not found' });
+
+  // ✅ Remove image from Firebase if requested
+  if (req.body.removeImage === 'true' && post.image) {
+    try {
+      const match = post.image.match(/\/o\/(.+)\?alt=media/);
+      if (match) {
+        const filePath = decodeURIComponent(match[1]);
+        await bucket.file(filePath).delete();
+        console.log('✅ Deleted old image:', filePath);
+        update.image = null;
+      }
+    } catch (err) {
+      console.error('❌ Failed to delete old image:', err);
+    }
+  }
+
+  // ✅ Replace image with new one if uploaded
   if (req.file) {
     const filename = `${uuidv4()}-${req.file.originalname}`;
     const upload = await bucket.upload(req.file.path, {
       destination: filename,
       metadata: {
         metadata: {
-          firebaseStorageDownloadTokens: uuidv4(),
-        },
-      },
+          firebaseStorageDownloadTokens: uuidv4()
+        }
+      }
     });
 
     const file = upload[0];
@@ -145,16 +164,10 @@ app.put('/posts/:id', upload.single('image'), async (req, res) => {
     update.image = `https://firebasestorage.googleapis.com/v0/b/${bucket.name}/o/${encodeURIComponent(filename)}?alt=media&token=${token}`;
 
     fs.unlinkSync(req.file.path);
-  } else {
-    // 👇 Keep the existing image if not replaced
-    const existing = await Post.findById(req.params.id);
-    if (existing?.image) {
-      update.image = existing.image;
-    }
   }
 
-  const post = await Post.findByIdAndUpdate(req.params.id, update, { new: true });
-  res.json({ message: "Post updated", post });
+  const updatedPost = await Post.findByIdAndUpdate(req.params.id, update, { new: true });
+  res.json({ message: "Post updated", post: updatedPost });
 });
 
 app.get('/guestbook', async (req, res) => {

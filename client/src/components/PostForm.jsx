@@ -18,6 +18,7 @@ function PostForm({ onPostCreated, mode = 'create' }) {
   const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(mode === 'edit');
   const contentRef = useRef(null);
+  const [removeExistingImage, setRemoveExistingImage] = useState(false);
 
   useEffect(() => {
     if (mode === 'edit' && id) {
@@ -85,6 +86,7 @@ function PostForm({ onPostCreated, mode = 'create' }) {
     formData.append('content', content);
     formData.append('category', category);
     if (image) formData.append('image', image);
+    formData.append('removeImage', removeExistingImage);
 
     const url = mode === 'edit'
       ? `https://my-blog-project-2485.onrender.com/posts/${id}`
@@ -224,37 +226,55 @@ function PostForm({ onPostCreated, mode = 'create' }) {
         <option>IoT</option>
       </select>
 
-      {existingImage && (
-        <p>
-          Current image: <br />
-          <img
-            src={existingImage}
-            alt=""
-            style={{ width: '100px', marginTop: '4px' }}
-          />
-        </p>
-      )}
-
-      <input
-        type="file"
-        onChange={handleImageChange}
-        style={{ display: 'block', marginBottom: '8px' }}
-      />
-
-      {imagePreviewUrl && (
+      {existingImage && !imagePreviewUrl && (
         <div style={{ marginBottom: '12px' }}>
-          <p style={{ margin: '4px 0' }}>📷 Image Preview:</p>
-          <img
+            <p style={{ margin: '4px 0' }}>📷 Click current image to remove:</p>
+            <img
+            src={existingImage}
+            alt="Current"
+            onClick={() => {
+                setExistingImage(null);
+                setRemoveExistingImage(true); // ✅ mark for backend
+            }}
+            style={{
+                width: '100px',
+                borderRadius: '4px',
+                border: '1px solid #ccc',
+                cursor: 'pointer',
+                opacity: 0.9,
+                transition: 'opacity 0.2s ease',
+            }}
+            onMouseOver={(e) => e.currentTarget.style.opacity = 0.6}
+            onMouseOut={(e) => e.currentTarget.style.opacity = 0.9}
+            title="Click to remove current image"
+            />
+        </div>
+        )}
+
+        {imagePreviewUrl && (
+        <div style={{ marginBottom: '12px' }}>
+            <p style={{ margin: '4px 0' }}>📷 Click image to remove:</p>
+            <img
             src={imagePreviewUrl}
             alt="Preview"
-            style={{
-              width: '100px',
-              borderRadius: '4px',
-              border: '1px solid #ccc'
+            onClick={() => {
+                setImage(null);
+                setImagePreviewUrl(null);
             }}
-          />
+            style={{
+                width: '100px',
+                borderRadius: '4px',
+                border: '1px solid #ccc',
+                cursor: 'pointer',
+                opacity: 0.9,
+                transition: 'opacity 0.2s ease',
+            }}
+            onMouseOver={(e) => e.currentTarget.style.opacity = 0.6}
+            onMouseOut={(e) => e.currentTarget.style.opacity = 0.9}
+            title="Click to remove image"
+            />
         </div>
-      )}
+        )}
 
       <button type="submit">Post</button>
     </form>
