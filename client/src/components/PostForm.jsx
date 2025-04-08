@@ -283,7 +283,9 @@ function PostForm({ onPostCreated, mode = 'create' }) {
         </div>
       )}
 
-      <button type="submit">Post</button>
+    <hr style={{ margin: '16px 0' }} />
+    
+    <button type="submit">Post</button>
     </form>
   );
 }
