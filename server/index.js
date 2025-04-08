@@ -84,6 +84,31 @@ app.post('/posts', upload.single('image'), async (req, res) => {
   res.json({ message: "Post created!", post: newPost });
 });
 
+app.post('/upload-image', upload.single('image'), async (req, res) => {
+  try {
+    const filename = `${uuidv4()}-${req.file.originalname}`;
+    const upload = await bucket.upload(req.file.path, {
+      destination: filename,
+      metadata: {
+        metadata: {
+          firebaseStorageDownloadTokens: uuidv4()
+        }
+      }
+    });
+
+    const file = upload[0];
+    const token = file.metadata.metadata.firebaseStorageDownloadTokens;
+    const url = `https://firebasestorage.googleapis.com/v0/b/${bucket.name}/o/${encodeURIComponent(filename)}?alt=media&token=${token}`;
+    
+    fs.unlinkSync(req.file.path); // ✅ remove temp file
+
+    res.json({ url });
+  } catch (err) {
+    console.error("❌ Image upload failed:", err);
+    res.status(500).json({ error: "Image upload failed" });
+  }
+});
+
 app.get('/posts/:id', async (req, res) => {
     try {
       const post = await Post.findById(req.params.id);
