@@ -38,6 +38,9 @@ function PostForm({ onPostCreated, mode = 'create' }) {
   }, [mode, id]);
 
   useEffect(() => {
+    const textarea = contentRef.current;
+    if (!textarea) return;
+  
     const handlePaste = async (e) => {
       const items = e.clipboardData?.items;
       if (!items) return;
@@ -61,10 +64,10 @@ function PostForm({ onPostCreated, mode = 'create' }) {
       }
     };
   
-    const textarea = contentRef.current;
     textarea.addEventListener('paste', handlePaste);
     return () => textarea.removeEventListener('paste', handlePaste);
   }, []);
+  
 
   function handleImageChange(e) {
     const file = e.target.files[0];

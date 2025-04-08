@@ -123,33 +123,38 @@ app.delete('/posts/:id', async (req, res) => {
 });
 
 app.put('/posts/:id', upload.single('image'), async (req, res) => {
-    const update = {
-        title: req.body.title,
-        content: req.body.content,
-        category: req.body.category,
-        // No date change
-    };
+  const update = {
+    title: req.body.title,
+    content: req.body.content,
+    category: req.body.category,
+  };
 
-    if (req.file) {
-      const filename = `${uuidv4()}-${req.file.originalname}`;
-      const upload = await bucket.upload(req.file.path, {
-        destination: filename,
+  if (req.file) {
+    const filename = `${uuidv4()}-${req.file.originalname}`;
+    const upload = await bucket.upload(req.file.path, {
+      destination: filename,
+      metadata: {
         metadata: {
-          metadata: {
-            firebaseStorageDownloadTokens: uuidv4()
-          }
-        }
-      });
-    
-      const file = upload[0];
-      const token = file.metadata.metadata.firebaseStorageDownloadTokens;
-      update.image = `https://firebasestorage.googleapis.com/v0/b/${bucket.name}/o/${encodeURIComponent(filename)}?alt=media&token=${token}`;
-    
-      fs.unlinkSync(req.file.path);
-    }
+          firebaseStorageDownloadTokens: uuidv4(),
+        },
+      },
+    });
 
-    const post = await Post.findByIdAndUpdate(req.params.id, update, { new: true });
-    res.json({ message: "Post updated", post });
+    const file = upload[0];
+    const token = file.metadata.metadata.firebaseStorageDownloadTokens;
+    update.image = `https://firebasestorage.googleapis.com/v0/b/${bucket.name}/o/${encodeURIComponent(filename)}?alt=media&token=${token}`;
+
+    fs.unlinkSync(req.file.path);
+  } else {
+    // 👇 Keep the existing image if not replaced
+    const existing = await Post.findById(req.params.id);
+    if (existing?.image) {
+      update.image = existing.image;
+    }
+  }
+
+  const post = await Post.findByIdAndUpdate(req.params.id, update, { new: true });
+  res.json({ message: "Post updated", post });
 });
 
 app.get('/guestbook', async (req, res) => {
