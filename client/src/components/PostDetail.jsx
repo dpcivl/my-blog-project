@@ -39,7 +39,7 @@ function PostDetail({ isAdmin, onPostDeleted }) {
           <span className="post-meta">🗂️ {post.category}</span>
         </div>
       </div>
-      <ReactMarkdown className="post-content">{post.content}</ReactMarkdown>
+      <PostContent content={post.content} />
       {post.image && (
         <img
           src={post.image}
