@@ -122,7 +122,7 @@ function PostForm({ onPostCreated, mode = 'create' }) {
             fontSize: '1.4rem',
             fontWeight: 'bold',
             padding: '12px 16px',
-            border: '2px solid #4caf50',
+            border: '1px solid #ccc',
             borderRadius: '8px',
             marginBottom: '16px',
             boxShadow: '0 1px 4px rgba(0,0,0,0.1)'
