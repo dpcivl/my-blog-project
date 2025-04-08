@@ -1,5 +1,6 @@
 import { useParams, useNavigate } from 'react-router-dom';
 import { useEffect, useState } from 'react';
+import ReactMarkdown from 'react-markdown';
 import axios from 'axios';
 
 function PostDetail({ isAdmin, onPostDeleted }) {
@@ -38,7 +39,7 @@ function PostDetail({ isAdmin, onPostDeleted }) {
           <span className="post-meta">🗂️ {post.category}</span>
         </div>
       </div>
-      <p className="post-content">{post.content}</p>
+      <ReactMarkdown className="post-content">{post.content}</ReactMarkdown>
       {post.image && (
         <img
           src={post.image}
