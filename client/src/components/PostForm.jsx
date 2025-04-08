@@ -132,69 +132,6 @@ function PostForm({ onPostCreated, mode = 'create' }) {
         }}
       />
 
-      <label style={{ fontWeight: 'bold', marginBottom: '6px', display: 'block' }}>
-        🖼️ Thumbnail Image
-      </label>
-
-      {existingImage && !imagePreviewUrl && (
-        <div style={{ marginBottom: '12px' }}>
-          <p style={{ margin: '4px 0' }}>📷 Click current image to remove:</p>
-          <img
-            src={existingImage}
-            alt="Current"
-            onClick={() => {
-              setExistingImage(null);
-              setRemoveExistingImage(true);
-            }}
-            style={{
-              width: '100px',
-              borderRadius: '4px',
-              border: '1px solid #ccc',
-              cursor: 'pointer',
-              opacity: 0.9,
-              transition: 'opacity 0.2s ease',
-            }}
-            onMouseOver={(e) => e.currentTarget.style.opacity = 0.6}
-            onMouseOut={(e) => e.currentTarget.style.opacity = 0.9}
-            title="Click to remove"
-          />
-        </div>
-      )}
-
-      {!existingImage && !imagePreviewUrl && (
-        <input
-          type="file"
-          accept="image/*"
-          onChange={handleImageChange}
-          style={{ marginBottom: '12px' }}
-        />
-      )}
-
-      {imagePreviewUrl && (
-        <div style={{ marginBottom: '12px' }}>
-          <p style={{ margin: '4px 0' }}>📷 Click image to remove:</p>
-          <img
-            src={imagePreviewUrl}
-            alt="Preview"
-            onClick={() => {
-              setImage(null);
-              setImagePreviewUrl(null);
-            }}
-            style={{
-              width: '100px',
-              borderRadius: '4px',
-              border: '1px solid #ccc',
-              cursor: 'pointer',
-              opacity: 0.9,
-              transition: 'opacity 0.2s ease',
-            }}
-            onMouseOver={(e) => e.currentTarget.style.opacity = 0.6}
-            onMouseOut={(e) => e.currentTarget.style.opacity = 0.9}
-            title="Click to remove"
-          />
-        </div>
-      )}
-
       <label style={{ fontWeight: 'bold', marginTop: '12px', display: 'block' }}>
         ✏️ Write your post
       </label>
@@ -282,6 +219,69 @@ function PostForm({ onPostCreated, mode = 'create' }) {
         <option>Game</option>
         <option>IoT</option>
       </select>
+
+      <label style={{ fontWeight: 'bold', marginBottom: '6px', display: 'block' }}>
+        🖼️ Thumbnail Image
+      </label>
+
+      {existingImage && !imagePreviewUrl && (
+        <div style={{ marginBottom: '12px' }}>
+          <p style={{ margin: '4px 0' }}>📷 Click current image to remove:</p>
+          <img
+            src={existingImage}
+            alt="Current"
+            onClick={() => {
+              setExistingImage(null);
+              setRemoveExistingImage(true);
+            }}
+            style={{
+              width: '100px',
+              borderRadius: '4px',
+              border: '1px solid #ccc',
+              cursor: 'pointer',
+              opacity: 0.9,
+              transition: 'opacity 0.2s ease',
+            }}
+            onMouseOver={(e) => e.currentTarget.style.opacity = 0.6}
+            onMouseOut={(e) => e.currentTarget.style.opacity = 0.9}
+            title="Click to remove"
+          />
+        </div>
+      )}
+
+      {!existingImage && !imagePreviewUrl && (
+        <input
+          type="file"
+          accept="image/*"
+          onChange={handleImageChange}
+          style={{ marginBottom: '12px' }}
+        />
+      )}
+
+      {imagePreviewUrl && (
+        <div style={{ marginBottom: '12px' }}>
+          <p style={{ margin: '4px 0' }}>📷 Click image to remove:</p>
+          <img
+            src={imagePreviewUrl}
+            alt="Preview"
+            onClick={() => {
+              setImage(null);
+              setImagePreviewUrl(null);
+            }}
+            style={{
+              width: '100px',
+              borderRadius: '4px',
+              border: '1px solid #ccc',
+              cursor: 'pointer',
+              opacity: 0.9,
+              transition: 'opacity 0.2s ease',
+            }}
+            onMouseOver={(e) => e.currentTarget.style.opacity = 0.6}
+            onMouseOut={(e) => e.currentTarget.style.opacity = 0.9}
+            title="Click to remove"
+          />
+        </div>
+      )}
 
       <button type="submit">Post</button>
     </form>
