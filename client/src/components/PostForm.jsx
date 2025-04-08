@@ -127,53 +127,85 @@ function PostForm({ onPostCreated, mode = 'create' }) {
         style={{ width: '100%', marginBottom: '8px' }}
       />
 
-      {/* ✅ Live Preview comes after the textarea */}
         <label style={{ fontWeight: 'bold', marginTop: '12px', display: 'block' }}>
-        📄 Live Preview
+        ✏️ Write your post
         </label>
+
+        <div style={{
+        display: 'flex',
+        gap: '16px',
+        alignItems: 'start',
+        flexWrap: 'wrap',
+        }}>
+
+        {/* Left: Editor */}
+        <textarea
+            ref={contentRef}
+            value={content}
+            onChange={e => setContent(e.target.value)}
+            placeholder="Write markdown here..."
+            required
+            rows={20}
+            style={{
+            flex: 1,
+            minWidth: '300px',
+            height: '500px',
+            padding: '12px',
+            border: '1px solid #ccc',
+            borderRadius: '6px',
+            fontFamily: 'monospace',
+            whiteSpace: 'pre-wrap',
+            overflow: 'auto',
+            }}
+        />
+
+        {/* Right: Preview */}
         <div
-        style={{
+            style={{
+            flex: 1,
+            minWidth: '300px',
+            height: '500px',
+            overflowY: 'auto',
+            padding: '12px',
             border: '1px solid #ddd',
             borderRadius: '6px',
-            padding: '12px',
             background: '#f9f9f9',
-            marginTop: '8px',
-            marginBottom: '20px',
             whiteSpace: 'pre-wrap',
-            textAlign: 'left'
-        }}
+            }}
         >
-        <ReactMarkdown
+            <ReactMarkdown
             children={content}
             remarkPlugins={[remarkGfm]}
             rehypePlugins={[rehypeHighlight]}
             components={{
-            img: ({ node, ...props }) => (
+                img: ({ node, ...props }) => (
                 <img
-                {...props}
-                style={{ maxWidth: '100%', borderRadius: '6px', marginTop: '10px' }}
-                alt=""
+                    {...props}
+                    style={{ maxWidth: '100%', borderRadius: '6px', marginTop: '10px' }}
+                    alt=""
                 />
-            ),
-            a: ({ node, ...props }) => (
+                ),
+                a: ({ node, ...props }) => (
                 <a {...props} target="_blank" rel="noopener noreferrer" />
-            ),
-            code({ node, inline, className, children, ...props }) {
+                ),
+                code({ node, inline, className, children, ...props }) {
                 return !inline ? (
-                <pre>
+                    <pre>
+                    <code className={className} {...props}>
+                        {children}
+                    </code>
+                    </pre>
+                ) : (
                     <code className={className} {...props}>
                     {children}
                     </code>
-                </pre>
-                ) : (
-                <code className={className} {...props}>
-                    {children}
-                </code>
                 );
-            }
+                }
             }}
-        />
+            />
         </div>
+        </div>
+
 
 
       <select
