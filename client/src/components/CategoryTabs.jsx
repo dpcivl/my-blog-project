@@ -1,5 +1,5 @@
 function CategoryTabs({ current, onChange }) {
-    const categories = ['All', 'Blender', 'Game', 'IoT'];
+    const categories = ['All', 'Blender', 'Game', 'Krita'];
 
     return (
         <div style={{ marginBottom: "16px" }}>

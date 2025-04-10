@@ -217,7 +217,7 @@ function PostForm({ onPostCreated, mode = 'create' }) {
       >
         <option>Blender</option>
         <option>Game</option>
-        <option>IoT</option>
+        <option>Krita</option>
       </select>
 
       <label style={{ fontWeight: 'bold', marginBottom: '6px', display: 'block' }}>

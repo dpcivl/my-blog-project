@@ -112,7 +112,7 @@ function App() {
               <div className="streak-bar">
                 <span className="streak">📙 Blender: {calculateStreak(posts, 'Blender')}</span>
                 <span className="streak">📘 Game: {calculateStreak(posts, 'Game')}</span>
-                <span className="streak">📒 IoT: {calculateStreak(posts, 'IoT')}</span>
+                <span className="streak">📗 Krita: {calculateStreak(posts, 'Krita')}</span>
               </div>
             </section>
           </>
