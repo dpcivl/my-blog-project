@@ -210,15 +210,35 @@ function PostForm({ onPostCreated, mode = 'create' }) {
         </div>
       </div>
 
+      <label style={{ fontWeight: 'bold', marginTop: '16px', display: 'block' }}>
+        🗂️ Category
+      </label>
+
       <select
         value={category}
-        onChange={e => setCategory(e.target.value)}
-        style={{ marginBottom: '16px', padding: '6px 12px' }}
+        onChange={(e) => setCategory(e.target.value)}
+        style={{ marginBottom: '4px' }}
       >
         <option>Blender</option>
         <option>Game</option>
         <option>Krita</option>
       </select>
+
+      <p style={{ margin: '8px 0', textAlign: 'center' }}>— or —</p>
+
+      <input
+        type="text"
+        placeholder="Write your own category..."
+        value={category}
+        onChange={(e) => setCategory(e.target.value)}
+        style={{
+          width: '100%',
+          padding: '8px',
+          borderRadius: '6px',
+          border: '1px solid #ccc',
+          marginBottom: '16px',
+        }}
+      />
 
       <label style={{ fontWeight: 'bold', marginBottom: '6px', display: 'block' }}>
         🖼️ Thumbnail Image
