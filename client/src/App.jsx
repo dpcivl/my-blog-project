@@ -44,7 +44,7 @@ function App() {
   }
 
   useEffect(() => {
-    setIsAdmin(localStorage.getItem("isAdmin") === "true");
+    setIsAdmin(sessionStorage.getItem("isAdmin") === "true");
     fetchPosts();
   }, []);
 
@@ -84,7 +84,7 @@ function App() {
           <button
             className="nav-button logout-button"
             onClick={() => {
-              localStorage.removeItem("isAdmin");
+              sessionStorage.removeItem("isAdmin");
               setIsAdmin(false);
             }}
           >

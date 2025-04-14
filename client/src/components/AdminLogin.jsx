@@ -11,7 +11,7 @@ function AdminLogin({ onLogin }) {
         axios.post("https://my-blog-project-2485.onrender.com/admin/login", { password })
         .then(res => {
             if (res.data.success) {
-            localStorage.setItem("isAdmin", "true");
+            sessionStorage.setItem("isAdmin", "true");
             onLogin(true);
             navigate("/");
             }
