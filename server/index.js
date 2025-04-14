@@ -46,20 +46,22 @@ app.post('/admin/login', (req, res) => {
     }
   });
 
-app.get('/posts', async (req, res) => {
-  const page = parseInt(req.query.page) || 1;
-  const limit = parseInt(req.query.limit) || 10;
-
-  const skip = (page - 1) * limit;
-
-  const posts = await Post.find()
-    .sort({ date: -1 })
-    .skip(skip)
-    .limit(limit);
-
-  const total = await Post.countDocuments();
-  res.json({ posts, total });
-});
+  app.get('/posts', async (req, res) => {
+    const allPosts = await Post.find().sort({ date: -1 });
+  
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 10;
+  
+    const startIndex = (page - 1) * limit;
+    const endIndex = page * limit;
+  
+    const paginatedPosts = allPosts.slice(startIndex, endIndex);
+  
+    res.json({
+      posts: paginatedPosts,
+      total: allPosts.length
+    });
+  });
   
 app.post('/posts', upload.single('image'), async (req, res) => {
   let imageUrl = null;

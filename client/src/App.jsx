@@ -44,7 +44,7 @@ function App() {
     axios.get('https://my-blog-project-2485.onrender.com/posts')
       .then(res => {
         if (Array.isArray(res.data)) {
-          setPosts(res.data);
+          setPosts(res.data.posts);
         } else {
           console.warn("⚠️ Unexpected post data:", res.data);
           setPosts([]);
