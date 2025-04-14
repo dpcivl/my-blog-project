@@ -47,20 +47,8 @@ app.post('/admin/login', (req, res) => {
   });
 
   app.get('/posts', async (req, res) => {
-    const allPosts = await Post.find().sort({ date: -1 });
-  
-    const page = parseInt(req.query.page) || 1;
-    const limit = parseInt(req.query.limit) || 10;
-  
-    const startIndex = (page - 1) * limit;
-    const endIndex = page * limit;
-  
-    const paginatedPosts = allPosts.slice(startIndex, endIndex);
-  
-    res.json({
-      posts: paginatedPosts,
-      total: allPosts.length
-    });
+    const posts = await Post.find().sort({ date: -1 });
+    res.json(posts); // ✅ simple list again
   });
   
 app.post('/posts', upload.single('image'), async (req, res) => {
