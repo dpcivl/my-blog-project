@@ -19,6 +19,7 @@ function PostForm({ onPostCreated, mode = 'create' }) {
   const [isLoading, setIsLoading] = useState(mode === 'edit');
   const contentRef = useRef(null);
   const [removeExistingImage, setRemoveExistingImage] = useState(false);
+  const [customCategory, setCustomCategory] = useState('');
 
   useEffect(() => {
     if (mode === 'edit' && id) {
@@ -216,9 +217,13 @@ function PostForm({ onPostCreated, mode = 'create' }) {
 
       <select
         value={category}
-        onChange={(e) => setCategory(e.target.value)}
+        onChange={(e) => {
+          setCategory(e.target.value);
+          setCustomCategory(''); // reset custom input if user selects
+        }}
         style={{ marginBottom: '4px' }}
       >
+        <option value="">— Choose a category —</option>
         <option>Blender</option>
         <option>Game</option>
         <option>Krita</option>
@@ -229,8 +234,11 @@ function PostForm({ onPostCreated, mode = 'create' }) {
       <input
         type="text"
         placeholder="Write your own category..."
-        value={category}
-        onChange={(e) => setCategory(e.target.value)}
+        value={customCategory}
+        onChange={(e) => {
+          setCustomCategory(e.target.value);
+          setCategory(''); // reset dropdown
+        }}
         style={{
           width: '100%',
           padding: '8px',
