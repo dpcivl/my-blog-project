@@ -15,15 +15,17 @@ function App() {
   const [isAdmin, setIsAdmin] = useState(false);
 
   function calculateStreak(posts, category) {
+    if (!Array.isArray(posts)) return 0;
+  
     const dates = posts
       .filter(p => p.category === category)
       .map(p => new Date(p.date).toISOString().split('T')[0])
       .filter((v, i, a) => a.indexOf(v) === i)
       .sort((a, b) => new Date(b) - new Date(a));
-
+  
     let streak = 0;
     let current = new Date().toISOString().split('T')[0];
-
+  
     for (let date of dates) {
       if (date === current) {
         streak++;
@@ -34,13 +36,24 @@ function App() {
         break;
       }
     }
-
+  
     return streak;
   }
 
   function fetchPosts() {
     axios.get('https://my-blog-project-2485.onrender.com/posts')
-      .then(res => setPosts(res.data));
+      .then(res => {
+        if (Array.isArray(res.data)) {
+          setPosts(res.data);
+        } else {
+          console.warn("⚠️ Unexpected post data:", res.data);
+          setPosts([]);
+        }
+      })
+      .catch(err => {
+        console.error("❌ Failed to fetch posts:", err);
+        setPosts([]);
+      });
   }
 
   useEffect(() => {
@@ -48,9 +61,9 @@ function App() {
     fetchPosts();
   }, []);
 
-  const filtered = category === 'All'
-    ? posts
-    : posts.filter(p => p.category === category);
+  const filtered = Array.isArray(posts)
+  ? (category === 'All' ? posts : posts.filter(p => p.category === category))
+  : [];
 
   return (
     <div className="app-wrapper">
