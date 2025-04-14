@@ -42,18 +42,7 @@ function App() {
 
   function fetchPosts() {
     axios.get('https://my-blog-project-2485.onrender.com/posts')
-      .then(res => {
-        if (Array.isArray(res.data)) {
-          setPosts(res.data.posts);
-        } else {
-          console.warn("⚠️ Unexpected post data:", res.data);
-          setPosts([]);
-        }
-      })
-      .catch(err => {
-        console.error("❌ Failed to fetch posts:", err);
-        setPosts([]);
-      });
+      .then(res => setPosts(res.data));
   }
 
   useEffect(() => {
@@ -61,9 +50,9 @@ function App() {
     fetchPosts();
   }, []);
 
-  const filtered = Array.isArray(posts)
-  ? (category === 'All' ? posts : posts.filter(p => p.category === category))
-  : [];
+  const filtered = category === 'All'
+  ? posts
+  : posts.filter(p => p.category === category);
 
   return (
     <div className="app-wrapper">

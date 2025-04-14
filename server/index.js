@@ -47,19 +47,8 @@ app.post('/admin/login', (req, res) => {
   });
 
   app.get('/posts', async (req, res) => {
-    try {
-      const page = parseInt(req.query.page) || 1;
-      const limit = parseInt(req.query.limit) || 10;
-      const skip = (page - 1) * limit;
-  
-      const total = await Post.countDocuments();
-      const posts = await Post.find().sort({ date: -1 }).skip(skip).limit(limit);
-  
-      res.json({ posts, total });
-    } catch (err) {
-      console.error("❌ Error fetching posts:", err);
-      res.status(500).json({ error: "Internal server error" });
-    }
+    const posts = await Post.find().sort({ date: -1 });
+    res.json(posts);
   });
   
 app.post('/posts', upload.single('image'), async (req, res) => {
