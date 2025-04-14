@@ -47,9 +47,19 @@ app.post('/admin/login', (req, res) => {
   });
 
 app.get('/posts', async (req, res) => {
-    const posts = await Post.find().sort({ date: -1 });
-    res.json(posts);
-  });
+  const page = parseInt(req.query.page) || 1;
+  const limit = parseInt(req.query.limit) || 10;
+
+  const skip = (page - 1) * limit;
+
+  const posts = await Post.find()
+    .sort({ date: -1 })
+    .skip(skip)
+    .limit(limit);
+
+  const total = await Post.countDocuments();
+  res.json({ posts, total });
+});
   
 app.post('/posts', upload.single('image'), async (req, res) => {
   let imageUrl = null;

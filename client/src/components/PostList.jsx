@@ -1,11 +1,20 @@
 import { Link } from 'react-router-dom';
+import { useState } from 'react';
 
 function PostList({ posts }) {
+  const postsPerPage = 10;
+  const [currentPage, setCurrentPage] = useState(1);
+
   if (posts.length === 0) return <p>No posts yet.</p>;
+
+  const startIndex = (currentPage - 1) * postsPerPage;
+  const endIndex = startIndex + postsPerPage;
+  const visiblePosts = posts.slice(startIndex, endIndex);
+  const totalPages = Math.ceil(posts.length / postsPerPage);
 
   return (
     <div>
-      {posts.map(post => (
+      {visiblePosts.map(post => (
         <div key={post._id} style={{
           border: "1px solid #ccc",
           padding: "12px",
@@ -23,7 +32,7 @@ function PostList({ posts }) {
             </div>
             {post.image && (
               <img
-                src={post.image}  // ✅ now using full Firebase URL
+                src={post.image}
                 alt=""
                 style={{
                   width: "80px",
@@ -37,6 +46,25 @@ function PostList({ posts }) {
           </div>
         </div>
       ))}
+
+      {/* Pagination controls */}
+      <div style={{ display: 'flex', justifyContent: 'center', marginTop: '16px', gap: '8px' }}>
+        <button
+          disabled={currentPage === 1}
+          onClick={() => setCurrentPage(prev => prev - 1)}
+        >
+          ◀ Prev
+        </button>
+        <span style={{ padding: '0 8px' }}>
+          Page {currentPage} / {totalPages}
+        </span>
+        <button
+          disabled={currentPage === totalPages}
+          onClick={() => setCurrentPage(prev => prev + 1)}
+        >
+          Next ▶
+        </button>
+      </div>
     </div>
   );
 }
