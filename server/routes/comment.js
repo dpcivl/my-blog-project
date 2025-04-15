@@ -24,20 +24,24 @@ router.post('/', async (req, res) => {
 });
 
 router.delete('/:id', async (req, res) => {
-  const { password } = req.body;
+  const { password, isAdmin } = req.body;
+
   const comment = await Comment.findById(req.params.id);
   if (!comment) return res.status(404).json({ message: 'Comment not found' });
 
-  if (!password) {
-    return res.status(400).json({ message: 'Password is required' });
+  // ✅ 관리자라면 비밀번호 없이 삭제 가능
+  if (isAdmin === true) {
+    await Comment.findByIdAndDelete(req.params.id);
+    return res.json({ message: 'Deleted by admin' });
   }
 
-  if (comment.password !== password) {
-    return res.status(401).json({ message: 'Wrong password' });
+  // ✅ 일반 사용자일 경우 비밀번호 확인
+  if (!password || comment.password !== password) {
+    return res.status(401).json({ message: '비밀번호가 일치하지 않습니다.' });
   }
 
   await Comment.findByIdAndDelete(req.params.id);
-  res.json({ message: 'Comment deleted' });
+  res.json({ message: 'Deleted by user' });
 });
 
 router.put('/:id', async (req, res) => {
