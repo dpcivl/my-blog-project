@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import axios from 'axios';
+import axios from '../axios';
 
 function CommentSection({ postId }) {
   const [comments, setComments] = useState([]);
@@ -34,7 +34,12 @@ function CommentSection({ postId }) {
     if (!password) return;
 
     try {
-      await axios.delete(`/comments/${id}`, { data: { password } });
+      await axios.delete(`/comments/${id}`, {
+        data: {
+          password: isAdmin ? null : password,
+          isAdmin: isAdmin || false
+        }
+      });
       fetchComments();
     } catch (err) {
       alert('비밀번호가 일치하지 않습니다.');
@@ -68,52 +73,66 @@ function CommentSection({ postId }) {
   };
 
   return (
-    <div style={{ marginTop: '2rem' }}>
-      <h4>💬 댓글 ({comments.length})</h4>
+    <div className="comment-section">
+      <h4 className="comment-title">💬 댓글 ({comments.length})</h4>
 
-      {comments.map(comment => (
-        <div key={comment._id} style={{ borderBottom: '1px solid #ccc', padding: '8px 0' }}>
-          <p><strong>{comment.name}</strong> 🕒 {new Date(comment.date).toLocaleString()}</p>
-
-          {editId === comment._id ? (
-            <div>
-              <textarea
-                value={editContent}
-                onChange={e => setEditContent(e.target.value)}
-              />
-              <input
-                type="password"
-                placeholder="비밀번호 입력"
-                value={editPassword}
-                onChange={e => setEditPassword(e.target.value)}
-              />
-              <button onClick={submitEdit}>수정 완료</button>
-              <button onClick={() => setEditId(null)}>취소</button>
+      {/* 댓글 목록 */}
+      <div className="comment-list">
+        {comments.map(comment => (
+          <div key={comment._id} className="comment-card">
+            <div className="comment-header">
+              <strong>{comment.name}</strong>
+              <span className="comment-date">{new Date(comment.date).toLocaleString()}</span>
             </div>
-          ) : (
-            <>
-              <p>{comment.content}</p>
-              <button onClick={() => handleEdit(comment)}>수정</button>
-              <button onClick={() => handleDelete(comment._id)}>삭제</button>
-            </>
-          )}
-        </div>
-      ))}
 
-      <form onSubmit={handleSubmit} style={{ marginTop: '16px' }}>
+            {editId === comment._id ? (
+              <>
+                <textarea
+                  value={editContent}
+                  onChange={e => setEditContent(e.target.value)}
+                  className="comment-textarea"
+                />
+                <input
+                  type="password"
+                  placeholder="비밀번호 입력"
+                  value={editPassword}
+                  onChange={e => setEditPassword(e.target.value)}
+                  className="comment-input"
+                />
+                <button onClick={submitEdit}>수정 완료</button>
+                <button onClick={() => setEditId(null)}>취소</button>
+              </>
+            ) : (
+              <>
+                <p className="comment-content">{comment.content}</p>
+                <div className="comment-actions">
+                  <button onClick={() => handleEdit(comment)}>수정</button>
+                  <button onClick={() => handleDelete(comment._id)}>삭제</button>
+                </div>
+              </>
+            )}
+          </div>
+        ))}
+      </div>
+
+      {/* 댓글 작성 폼 */}
+      <form onSubmit={handleSubmit} className="comment-form">
         <input
           placeholder="이름"
+          className="comment-input"
           value={form.name}
           onChange={e => setForm({ ...form, name: e.target.value })}
         />
         <input
           placeholder="비밀번호"
           type="password"
+          className="comment-input"
           value={form.password}
           onChange={e => setForm({ ...form, password: e.target.value })}
         />
         <textarea
           placeholder="댓글을 입력하세요"
+          className="comment-textarea"
           value={form.content}
           onChange={e => setForm({ ...form, content: e.target.value })}
         />
