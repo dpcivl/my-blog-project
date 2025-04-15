@@ -14,27 +14,41 @@ function App() {
   const [category, setCategory] = useState('All');
   const [isAdmin, setIsAdmin] = useState(false);
 
-  function calculateStreak(posts, category) {
-    if (!Array.isArray(posts)) return 0;
+  function calculateStreak(posts) {
+    if (!posts || posts.length === 0) return 0;
   
-    const dates = posts
-      .filter(p => p.category === category)
-      .map(p => new Date(p.date).toISOString().split('T')[0])
-      .filter((v, i, a) => a.indexOf(v) === i)
-      .sort((a, b) => new Date(b) - new Date(a));
+    const dateKeys = new Set(
+      posts.map(post => new Date(post.date).toISOString().slice(0, 10)) // YYYY-MM-DD
+    );
   
+    const today = new Date();
+    const todayKey = today.toISOString().slice(0, 10);
+    const yesterday = new Date(today);
+    yesterday.setDate(yesterday.getDate() - 1);
+    const yesterdayKey = yesterday.toISOString().slice(0, 10);
+  
+    // ✅ 어제 글이 없으면 streak는 무조건 0
+    if (!dateKeys.has(yesterdayKey)) {
+      return 0;
+    }
+  
+    // ✅ 어제부터 과거로 역순 체크
     let streak = 0;
-    let current = new Date().toISOString().split('T')[0];
+    const current = new Date(yesterday);
   
-    for (let date of dates) {
-      if (date === current) {
+    while (true) {
+      const key = current.toISOString().slice(0, 10);
+      if (dateKeys.has(key)) {
         streak++;
-        current = new Date(new Date(current).setDate(new Date(current).getDate() - 1))
-          .toISOString()
-          .split('T')[0];
+        current.setDate(current.getDate() - 1);
       } else {
         break;
       }
+    }
+  
+    // ✅ 오늘 글이 있으면 streak += 1
+    if (dateKeys.has(todayKey)) {
+      streak++;
     }
   
     return streak;
