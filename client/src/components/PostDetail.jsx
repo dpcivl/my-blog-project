@@ -1,6 +1,7 @@
 import { useParams, useNavigate } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import PostContent from './PostContent';
+import CommentSection from './CommentSection';
 import ReactMarkdown from 'react-markdown';
 import axios from 'axios';
 
@@ -54,7 +55,10 @@ function PostDetail({ isAdmin, onPostDeleted }) {
           }}
         />
       )}
-      <div style={{ marginTop: "20px" }}>
+
+    <CommentSection postId={post._id} />
+
+    <div style={{ marginTop: "20px" }}>
           {isAdmin && (
             <>
               <button className="danger" onClick={handleDelete}>🗑️ Delete</button>

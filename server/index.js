@@ -1,28 +1,19 @@
 require('dotenv').config();
-const mongoose = require('mongoose');
-
-mongoose.connect(process.env.MONGODB_URI, {
-}).then(() => console.log("✅ Connected to MongoDB"))
-  .catch(err => console.error("❌ MongoDB connection error:", err));
-
-const Post = require('./models/Post');
-const GuestbookMessage = require('./models/GuestbookMessage');
 const express = require('express');
+const mongoose = require('mongoose');
 const cors = require('cors');
 const bodyParser = require('body-parser');
 const multer = require('multer');
 const path = require('path');
-const upload = multer({
-    dest: path.join(__dirname, 'uploads')
-});
-const app = express();
+const fs = require('fs');
+const { v4: uuidv4 } = require('uuid');
 const bcrypt = require('bcrypt');
 const admin = require("firebase-admin");
-// const serviceAccount = require("./firebase-key.json");
-const fs = require('fs');
-const { v4: uuidv4 } = require('uuid'); // For unique filenames
+
+const app = express();
 const PORT = 3000;
 
+// 🔹 Firebase Admin 초기화
 const serviceAccountBase64 = process.env.FIREBASE_CREDENTIALS_BASE64;
 const serviceAccount = JSON.parse(
   Buffer.from(serviceAccountBase64, "base64").toString("utf8")
@@ -34,59 +25,25 @@ admin.initializeApp({
 });
 const bucket = admin.storage().bucket();
 
+// 🔹 MongoDB 연결
+mongoose.connect(process.env.MONGODB_URI, {})
+  .then(() => console.log("✅ Connected to MongoDB"))
+  .catch(err => console.error("❌ MongoDB connection error:", err));
+
+// 🔹 미들웨어
 app.use(cors());
 app.use(bodyParser.json());
 app.use(express.json());
 
-app.post('/admin/login', (req, res) => {
-    if (req.body.password === process.env.ADMIN_PASSWORD) {
-      return res.json({ success: true });
-    } else {
-      return res.status(401).json({ success: false });
-    }
-  });
-
-  app.get('/posts', async (req, res) => {
-    const posts = await Post.find().sort({ date: -1 });
-    res.json(posts);
-  });
-  
-app.post('/posts', upload.single('image'), async (req, res) => {
-  let imageUrl = null;
-
-  if (req.file) {
-    const filename = `${uuidv4()}-${req.file.originalname}`;
-    const upload = await bucket.upload(req.file.path, {
-      destination: filename,
-      metadata: {
-        metadata: {
-          firebaseStorageDownloadTokens: uuidv4()
-        }
-      }
-    });
-
-    const file = upload[0];
-    const token = file.metadata.metadata.firebaseStorageDownloadTokens;
-    imageUrl = `https://firebasestorage.googleapis.com/v0/b/${bucket.name}/o/${encodeURIComponent(filename)}?alt=media&token=${token}`;
-
-    // remove local copy
-    fs.unlinkSync(req.file.path);
-  }
-
-  const newPost = new Post({
-    title: req.body.title,
-    content: req.body.content,
-    category: req.body.category,
-    image: imageUrl
-  });
-
-  await newPost.save();
-  res.json({ message: "Post created!", post: newPost });
+// 🔹 multer 설정 (공용으로 쓰기 위해 index에도 유지)
+const upload = multer({
+  dest: path.join(__dirname, 'uploads')
 });
 
+// 🔹 Firebase Storage 이미지 업로드 전용
 app.post('/upload-image', upload.single('image'), async (req, res) => {
   const filename = `${uuidv4()}-${req.file.originalname}`;
-  const upload = await bucket.upload(req.file.path, {
+  const uploadResult = await bucket.upload(req.file.path, {
     destination: filename,
     metadata: {
       metadata: {
@@ -95,7 +52,7 @@ app.post('/upload-image', upload.single('image'), async (req, res) => {
     }
   });
 
-  const file = upload[0];
+  const file = uploadResult[0];
   const token = file.metadata.metadata.firebaseStorageDownloadTokens;
   const url = `https://firebasestorage.googleapis.com/v0/b/${bucket.name}/o/${encodeURIComponent(filename)}?alt=media&token=${token}`;
 
@@ -103,141 +60,25 @@ app.post('/upload-image', upload.single('image'), async (req, res) => {
   res.json({ url });
 });
 
-app.get('/posts/:id', async (req, res) => {
-    try {
-      const post = await Post.findById(req.params.id);
-      if (!post) return res.status(404).json({ error: "Not found" });
-      res.json(post);
-    } catch (err) {
-      res.status(400).json({ error: "Invalid ID format" });
-    }
-  });
+// 🔹 관리자 로그인
+app.post('/admin/login', (req, res) => {
+  if (req.body.password === process.env.ADMIN_PASSWORD) {
+    return res.json({ success: true });
+  } else {
+    return res.status(401).json({ success: false });
+  }
+});
 
+// 🔹 라우터 등록
+const postRoutes = require('./routes/post');
+const guestbookRoutes = require('./routes/guestbook');
+const commentRoutes = require('./routes/comment');
+
+app.use('/posts', postRoutes);
+app.use('/guestbook', guestbookRoutes);
+app.use('/comments', commentRoutes);
+
+// 🔹 서버 시작
 app.listen(PORT, () => {
-    console.log(`Blog backend running on http://localhost:${PORT}`);
+  console.log(`🚀 Blog backend running at http://localhost:${PORT}`);
 });
-
-app.delete('/posts/:id', async (req, res) => {
-    await Post.findByIdAndDelete(req.params.id);
-    res.json({ message: "Post deleted" });
-});
-
-app.put('/posts/:id', upload.single('image'), async (req, res) => {
-  const update = {
-    title: req.body.title,
-    content: req.body.content,
-    category: req.body.category,
-  };
-
-  const post = await Post.findById(req.params.id);
-  if (!post) return res.status(404).json({ message: 'Post not found' });
-
-  // ✅ Remove image from Firebase if requested
-  if (req.body.removeImage === 'true' && post.image) {
-    try {
-      const match = post.image.match(/\/o\/(.+)\?alt=media/);
-      if (match) {
-        const filePath = decodeURIComponent(match[1]);
-        await bucket.file(filePath).delete();
-        console.log('✅ Deleted old image:', filePath);
-        update.image = null;
-      }
-    } catch (err) {
-      console.error('❌ Failed to delete old image:', err);
-    }
-  }
-
-  // ✅ Replace image with new one if uploaded
-  if (req.file) {
-    const filename = `${uuidv4()}-${req.file.originalname}`;
-    const upload = await bucket.upload(req.file.path, {
-      destination: filename,
-      metadata: {
-        metadata: {
-          firebaseStorageDownloadTokens: uuidv4()
-        }
-      }
-    });
-
-    const file = upload[0];
-    const token = file.metadata.metadata.firebaseStorageDownloadTokens;
-    update.image = `https://firebasestorage.googleapis.com/v0/b/${bucket.name}/o/${encodeURIComponent(filename)}?alt=media&token=${token}`;
-
-    fs.unlinkSync(req.file.path);
-  }
-
-  const updatedPost = await Post.findByIdAndUpdate(req.params.id, update, { new: true });
-  res.json({ message: "Post updated", post: updatedPost });
-});
-
-app.get('/guestbook', async (req, res) => {
-    const messages = await GuestbookMessage.find({ hidden: false })
-      .select('-password') // 👈 exclude password field
-      .sort({ date: -1 });
-  
-    res.json(messages);
-  });
-
-app.post('/guestbook', async (req, res) => {
-    const { name, message, password } = req.body;
-  
-    if (!password) {
-      return res.status(400).json({ error: "Password is required" });
-    }
-  
-    const hashedPassword = await bcrypt.hash(password, 10);
-  
-    const newMsg = new GuestbookMessage({
-      name,
-      message,
-      password: hashedPassword
-    });
-  
-    await newMsg.save();
-    res.json({ message: "Message posted" });
-  });
-
-// DELETE (Guest deletes permanently)
-app.delete('/guestbook/delete/:id', async (req, res) => {
-    try {
-      const id = req.params.id;
-      const password = req.body?.password;
-  
-      const message = await GuestbookMessage.findById(id);
-      if (!message) return res.status(404).json({ message: 'Not found' });
-  
-      // ✅ Admin mode (no password)
-      if (!password) {
-        await GuestbookMessage.findByIdAndDelete(id);
-        return res.json({ message: 'Deleted by admin' });
-      }
-  
-      // ✅ Guest mode — verify password
-      const match = await bcrypt.compare(password, message.password);
-      if (!match) return res.status(401).json({ message: 'Wrong password' });
-  
-      await GuestbookMessage.findByIdAndDelete(id);
-      return res.json({ message: 'Deleted by guest' });
-  
-    } catch (err) {
-      console.error('❌ Deletion failed:', err);
-      return res.status(500).json({ message: 'Internal server error' });
-    }
-  });
-  
-// HIDE (Admin hides)
-app.post('/guestbook/hide/:id', async (req, res) => {
-    await GuestbookMessage.findByIdAndUpdate(req.params.id, { hidden: true });
-    res.json({ message: "Message hidden" });
-  });
-
-app.get('/guestbook/all', async (req, res) => {
-    const messages = await GuestbookMessage.find().sort({ date: -1 });
-    console.log("Fetched all messages:", messages);
-    res.json(messages);
-  });
-
-app.post('/guestbook/unhide/:id', async (req, res) => {
-    await GuestbookMessage.findByIdAndUpdate(req.params.id, { hidden: false });
-    res.json({ message: "Message unhidden" });
-  });
