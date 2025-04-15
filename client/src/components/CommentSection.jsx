@@ -31,21 +31,20 @@ function CommentSection({ postId, isAdmin }) {
 
   const handleDelete = async (id) => {
     let password = null;
-
-    // ✅ 일반 사용자만 prompt 창 띄움
+  
     if (!isAdmin) {
       password = prompt('비밀번호를 입력하세요');
       if (!password) return;
     }
-
+  
     try {
       await axios.post(`/comments/delete/${id}`, {
         password,
-        isAdmin: isAdmin || false,
+        isAdmin: isAdmin || false
       });
       fetchComments();
     } catch (err) {
-      alert(err.response?.data?.message || "삭제 중 오류 발생");
+      alert(err.response?.data?.message || '삭제 중 오류 발생');
     }
   };
 
