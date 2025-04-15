@@ -24,21 +24,18 @@ router.post('/', async (req, res) => {
   res.json({ success: true });
 });
 
-router.delete('/:id', async (req, res) => {
+router.post('/delete/:id', async (req, res) => {
   const { password, isAdmin } = req.body;
 
   const comment = await Comment.findById(req.params.id);
   if (!comment) return res.status(404).json({ message: 'Comment not found' });
 
-  // ✅ 관리자 삭제는 패스워드 없이도 가능
   if (isAdmin === true) {
     await Comment.findByIdAndDelete(req.params.id);
     return res.json({ message: 'Deleted by admin' });
   }
 
-  // ✅ 일반 사용자: bcrypt 비교
-  if (!password) return res.status(400).json({ message: '비밀번호를 입력하세요.' });
-
+  const bcrypt = require('bcrypt');
   const match = await bcrypt.compare(password, comment.password);
   if (!match) return res.status(401).json({ message: '비밀번호가 일치하지 않습니다.' });
 

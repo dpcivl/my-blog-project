@@ -30,19 +30,14 @@ function CommentSection({ postId }) {
   };
 
   const handleDelete = async (id) => {
-    const password = prompt('댓글 작성 시 입력한 비밀번호를 입력하세요');
+    const password = prompt('비밀번호를 입력하세요');
     if (!password) return;
-
+  
     try {
-      await axios.delete(`/comments/${id}`, {
-        data: {
-          password: isAdmin ? null : password,
-          isAdmin: isAdmin || false
-        }
-      });
+      await axios.post(`/comments/delete/${id}`, { password });
       fetchComments();
     } catch (err) {
-      alert('비밀번호가 일치하지 않습니다.');
+      alert(err.response?.data?.message || "삭제 중 오류 발생");
     }
   };
 
