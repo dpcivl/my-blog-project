@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import axios from '../axios';
 
-function CommentSection({ postId }) {
+function CommentSection({ postId, isAdmin }) {
   const [comments, setComments] = useState([]);
   const [form, setForm] = useState({ name: '', password: '', content: '' });
   const [editId, setEditId] = useState(null);
@@ -30,11 +30,19 @@ function CommentSection({ postId }) {
   };
 
   const handleDelete = async (id) => {
-    const password = prompt('비밀번호를 입력하세요');
-    if (!password) return;
-  
+    let password = null;
+
+    // ✅ 일반 사용자만 prompt 창 띄움
+    if (!isAdmin) {
+      password = prompt('비밀번호를 입력하세요');
+      if (!password) return;
+    }
+
     try {
-      await axios.post(`/comments/delete/${id}`, { password });
+      await axios.post(`/comments/delete/${id}`, {
+        password,
+        isAdmin: isAdmin || false,
+      });
       fetchComments();
     } catch (err) {
       alert(err.response?.data?.message || "삭제 중 오류 발생");

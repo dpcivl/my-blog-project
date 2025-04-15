@@ -56,7 +56,7 @@ function PostDetail({ isAdmin, onPostDeleted }) {
         />
       )}
 
-    <CommentSection postId={post._id} />
+    <CommentSection postId={post._id} isAdmin={isAdmin} />
 
     <div style={{ marginTop: "20px" }}>
           {isAdmin && (
